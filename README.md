@@ -1,11 +1,11 @@
 # processflac.sh
-A Bash script to process FLAC files such as removing metadata, compressing, adding replaygain and much more
+A Bash script to process FLAC files such as removing metadata, compressing, adding ReplayGain and much more
 
 ## Processing
-This script can do the following processing:
+This script can do the following processings:
 
 - Replace metadata based on a whitelist
-- Removed ID3 tags from FLAC files (considered as a corrupt FLAC files if found)
+- Remove ID3 tags from FLAC files (considered as a corrupt FLAC files if found)
 - Remove cover from FLAC files
 - Import existing cover to FLAC files (the cover file must be in the album's folder)
 - Compress cover file using jpegoptim
