@@ -5,7 +5,7 @@ A Bash script to process FLAC files such as removing metadata, compressing, addi
 This script can do the following processings:
 
 - Replace metadata based on a whitelist
-- Remove ID3 tags from FLAC files (considered as a corrupt FLAC files if found)
+- Remove ID3 tags from FLAC files (ID3 found in a FLAC file are considered as a corrupted FLAC file)
 - Remove cover from FLAC files
 - Import existing cover to FLAC files (the cover file must be in the album's folder)
 - Compress cover file using jpegoptim
@@ -29,7 +29,7 @@ Note: Your music collection must be structured as follow:
     		cover file
 
 ## More informations
-- The compress process is only made once. When a successfully compression is done, the script saves the current encoder used to process the file directly in the FLAC file. So you when you relaunch the script, it will only try to compress files that were not already compressed (useful when having a huge collection)
+- The compress process is only made once. When a successfully compression is done, the script saves the current encoder used to process the file directly in the FLAC file. So when you relaunch the script, it will only try to compress files that were not already compressed (useful when having a huge collection)
 
 ## Dependencies
 This script depends on the following commands:

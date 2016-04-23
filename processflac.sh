@@ -26,7 +26,7 @@ DELETE_LYRICS_FILE=true
 ADD_COMMENT=false
 COMPRESS_FLAC_FILE=true
 ADD_REPLAYGAIN=true
-MOVE_FILES=false
+MOVE_FILES=true
 DELETE_UNWANTED_FILES=true # Only keeps FLACs, lyrics and cover.jpg by default
 
 COMMENT="Share with love <3"
@@ -178,7 +178,6 @@ logs() {
 ######################################################
 # Script
 ######################################################
-
 # Enable "Internal Field Separateur" to allow filenames with spaces
 IFS=$'\n'
 
@@ -235,7 +234,7 @@ for artist in $(find $SOURCE_FOLDER -mindepth 1 -maxdepth 1 -type d | sort); do
 				fi
 
 				if $DELETE_LYRICS_FILE; then
-					deleteLyricsFile "$album/${music##*/}.srt"
+					deleteLyricsFile "${music%.*}.srt"
 				fi
 
 				if $ADD_COMMENT; then
