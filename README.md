@@ -1,5 +1,5 @@
 # processflac.sh
-A Bash script to process FLAC files such as removing metadata, compressing, adding ReplayGain and much more
+A Bash script to process FLAC files such as removing metadata from files, compressing, adding ReplayGain and much more.
 
 ## Processing
 This script can do the following processings:
@@ -27,8 +27,9 @@ Note: Your music collection must be structured as follow:
     	albums/
     		FLAC files
     		cover file
+    		other files
 
-## More informations
+## More information
 - The compress process is only made once. When a successfully compression is done, the script saves the current encoder used to process the file directly in the FLAC file. So when you relaunch the script, it will only try to compress files that were not already compressed (useful when having a huge collection)
 
 ## Dependencies
@@ -45,8 +46,12 @@ This script depends on the following commands:
 ## Todo / known possible improvements
 - Export lyrics only if present in FLAC file
 - Add the possibility to have a whitelist of files to keep instead of modifing the `find` command
-- Change the structure for searching musics
 - Make a better documentation (supported metadata, and much more...)
+- Support more formats:
+    - Convert WMA -> FLAC: `ffmpeg -strict -2 -i input.wma output.flac`
+    - Convert WV -> FLAC: `ffmpeg -i input.wv -acodec flac output.flac`
+    - Convert TTA -> FLAC: `ffmpeg -i input.tta -ab 800k output.flac`
+    - Solution for all: https://ubuntuforums.org/showthread.php?t=1609760
 
 # Sources (unformated for the moment)
 The following sources were used to make this script. Thanks to them for the help !
