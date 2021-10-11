@@ -1,0 +1,45 @@
+{
+  "name": "flactwoflac",
+  "version": "1.0.0",
+  "description": "A Node.js script to process FLAC files",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ludelafo/flactwoflac.git"
+  },
+  "author": "Ludovic Delafontaine",
+  "bugs": {
+    "url": "https://github.com/ludelafo/flactwoflac/issues"
+  },
+  "homepage": "https://github.com/ludelafo/flactwoflac#readme",
+  "keywords": [
+    "audio",
+    "flac",
+    "audio-processing",
+    "flac-files"
+  ],
+  "scripts": {
+    "packages:check-outdated": "npm outdated",
+    "packages:audit": "npm audit",
+    "packages:update": "npm update --latest",
+    "review:code:format": "prettier --check '**/*.{ts,js}' --ignore-path .gitignore",
+    "review:code:format:fix": "prettier --write '**/*.{ts,js}' --ignore-path .gitignore",
+    "review:code:lint": "eslint --ext .ts,.js --ignore-path .gitignore",
+    "review:code:lint:fix": "eslint --ext .ts,.js --ignore-path .gitignore",
+    "flactwoflac": "ts-node audiotwoaudio/flactwoflac/index.ts"
+  },
+  "dependencies": {
+    "@deepkit/framework": "^1.0.1-alpha.58",
+    "fast-glob": "^3.2.7"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.32.0",
+    "@typescript-eslint/parser": "^4.32.0",
+    "eslint": "^7.31.0",
+    "eslint-config-prettier": "^8.3.0",
+    "prettier": "^2.3.2",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  }
+}

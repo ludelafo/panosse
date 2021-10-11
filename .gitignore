@@ -1,0 +1,60 @@
+## Audio files & misc
+
+*.flac
+*.mp3
+*.log
+*.cue
+
+## Artworks
+
+*.jpg
+*.png
+
+## Node
+
+# Dependency directories
+node_modules/
+
+# Deepkit build / generate output
+.deepkit
+
+## Linux
+
+*~
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+## macOS
+
+# General
+.DS_Store
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+## Windows
+
+# Windows thumbnail cache files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# Folder config file
+[Dd]esktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows shortcuts
+*.lnk
