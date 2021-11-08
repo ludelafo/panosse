@@ -158,7 +158,7 @@ export class Tags implements Command {
 		threadCount: number,
 		// FLAC tags
 		@(flag
-			.description('Fill missings tags with a "No <tag>" in file')
+			.description('Fill missings tags with a "[No <tag>]" in file')
 			.default(true))
 		fillMissingTags: boolean,
 		@(flag

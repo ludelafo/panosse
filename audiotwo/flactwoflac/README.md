@@ -1,4 +1,4 @@
-# **`flac²flac`**
+# `flac²flac`
 
 A Node.js script to process FLAC files
 

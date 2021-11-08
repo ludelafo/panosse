@@ -22,7 +22,7 @@ const worker = async (
 			const tagContent = await getTag(flacFile, tag);
 
 			if (!tagContent && fillMissingTags) {
-				tagsKept.set(tag, `No ${tag.toLowerCase()}`);
+				tagsKept.set(tag, `[No ${tag.toLowerCase()}]`);
 			} else {
 				tagsKept.set(tag, tagContent);
 			}
