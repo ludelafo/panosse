@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import globby from 'globby';
 import fg from 'fast-glob';
 
 export const createDirectory = async (directoryPath: string): Promise<void> => {

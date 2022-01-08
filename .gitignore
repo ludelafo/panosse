@@ -15,8 +15,8 @@
 # Dependency directories
 node_modules/
 
-# Deepkit build / generate output
-.deepkit
+# Oclif output
+lib
 
 ## Linux
 

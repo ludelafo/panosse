@@ -1,4 +1,4 @@
-# **`flac²flac`** - Visual Studio Code configuration
+# **`audio²`** - Visual Studio Code configuration
 
 This directory contains the configuration for Visual Studio Code that can be shared among all the developers.
 

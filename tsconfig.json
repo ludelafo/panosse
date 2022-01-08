@@ -1,21 +1,15 @@
 {
   "compilerOptions": {
-    "outDir": ".deepkit",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "declaration": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "outDir": "lib",
+    "rootDir": "src",
     "strict": true,
-    "esModuleInterop": true,
-    "target": "ES2020",
-    "module": "CommonJS",
-    "moduleResolution": "node"
+    "target": "es6",
+		"esModuleInterop": true
   },
   "include": [
-    "**/*",
-    ".eslintrc.js",
-    ".prettierrc.js"
-  ],
-  "exclude": [
-    ".deepkit",
-    "node_modules"
+    "src/**/*"
   ]
 }

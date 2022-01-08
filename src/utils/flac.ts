@@ -5,7 +5,11 @@ export const getEncoderVersion = async () => {
 
 	const encoderVersionRegex = new RegExp('(flac) (d+[.]d+[.]d+)');
 
-	return encoderVersionRegex.exec(stdout)?.at(1);
+	const results = encoderVersionRegex.exec(stdout);
+
+	if (results) {
+		return results[1];
+	}
 };
 
 export const compressFile = async (flacFile: string, encoderSettings: string) =>

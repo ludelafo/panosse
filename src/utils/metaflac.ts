@@ -15,7 +15,11 @@ export const getVendorTag = async (flacFile: string) => {
 
 	const vendorTagRegex = new RegExp('(libFLAC) (d+[.]d+[.]d+)');
 
-	return vendorTagRegex.exec(stdout)?.at(1);
+	const results = vendorTagRegex.exec(stdout);
+
+	if (results) {
+		return results[1];
+	}
 };
 
 export const addTag = async (
@@ -32,13 +36,20 @@ export const removeTag = async (flacFile: string, tagName: string) =>
 
 export const removeBlock = async (flacFile: string, blockType: string) =>
 	await executeCommand(
-		`metaflac --remove "--block-type=${blockType}" --dont-use-padding "${flacFile}"`,
+		`metaflac --dont-use-padding --remove "--block-type=${blockType}" "${flacFile}"`,
 	);
 
-export const removeAll = async (flacFile: string) =>
+export const removeAllBlocksExcept = async (flacFile: string, exceptBlockTypes: string[]) =>
 	await executeCommand(
-		`metaflac --remove-all --dont-use-padding "${flacFile}"`,
+		`metaflac --dont-use-padding --remove --except-block-type ${exceptBlockTypes
+			.join(',')} "${flacFile}"`,
 	);
+
+
+export const removeAllTags = async (flacFile: string) =>
+await executeCommand(
+	`metaflac --dont-use-padding --remove-all-tags "${flacFile}"`,
+);
 
 export const addReplayGain = async (flacFiles: string[]) =>
 	await executeCommand(

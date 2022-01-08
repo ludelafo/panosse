@@ -1,6 +1,6 @@
 {
   "name": "audiotwo",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "A collection of Node.js scripts to process audio files",
   "license": "GPL-3.0",
   "repository": {
@@ -8,38 +8,73 @@
     "url": "git+https://github.com/ludelafo/audiotwo.git"
   },
   "author": "Ludovic Delafontaine",
-  "bugs": {
-    "url": "https://github.com/ludelafo/audiotwo/issues"
-  },
-  "homepage": "https://github.com/ludelafo/audiotwo#readme",
+  "bugs": "https://github.com/ludelafo/audiotwo/issues",
+  "homepage": "https://github.com/ludelafo/audiotwo",
   "keywords": [
+    "audio-processing",
+    "audio-files",
     "audio",
     "flac",
-    "audio-processing",
-    "flac-files"
+    "mp3",
+    "ogg"
   ],
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "main": "lib/index.js",
+  "bin": {
+    "audiotwo": "./bin/run"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "oclif": {
+    "commands": "./lib/commands",
+    "types": "lib/index.d.ts",
+    "bin": "audiotwo",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
   "scripts": {
-    "packages:check-outdated": "npm outdated",
-    "packages:audit": "npm audit",
-    "packages:update": "npm update --latest",
-    "review:code:format": "prettier --check '**/*.{ts,js}' --ignore-path .gitignore",
-    "review:code:format:fix": "prettier --write '**/*.{ts,js}' --ignore-path .gitignore",
-    "review:code:lint": "eslint --ext .ts,.js --ignore-path .gitignore",
-    "review:code:lint:fix": "eslint --ext .ts,.js --ignore-path .gitignore",
-    "flactwoflac": "ts-node audiotwoaudio/flactwoflac/index.ts"
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "postpack": "rm -f oclif.manifest.json",
+    "review:code:format": "prettier --check \"**/*.{ts,js}\" --ignore-path .gitignore",
+    "review:code:format:fix": "prettier --write \"**/*.{ts,js}\" --ignore-path .gitignore",
+    "review:code:lint": "eslint --ext .ts,.js --ignore-path .gitignore .",
+    "review:code:lint:fix": "eslint --fix --ext .ts,.js --ignore-path .gitignore .",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif-dev readme && git add README.md"
   },
   "dependencies": {
-    "@deepkit/framework": "^1.0.1-alpha.58",
-    "fast-glob": "^3.2.7"
+    "@oclif/command": "^1.8.0",
+    "@oclif/config": "^1.17.0",
+    "@oclif/plugin-help": "^3.2.3",
+    "fast-glob": "^3.2.7",
+    "tslib": "^1.14.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.3.0",
-    "@typescript-eslint/parser": "^5.3.0",
-    "eslint": "^8.2.0",
+    "@oclif/dev-cli": "^1.26.0",
+    "@oclif/test": "^1.2.8",
+    "@types/chai": "^4.2.22",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^10.17.60",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
+"chai": "^4.3.4",
+    "eslint": "^5.16.0",
+    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif-typescript": "^0.1.0",
     "eslint-config-prettier": "^8.3.0",
-    "prettier": "^2.4.1",
-    "rimraf": "^3.0.2",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.4.4"
+    "eslint-plugin-prettier": "^3.4.0",
+    "globby": "^10.0.2",
+    "prettier": "^2.3.2",
+    "mocha": "^5.2.0",
+    "nyc": "^14.1.1",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.10"
   }
 }

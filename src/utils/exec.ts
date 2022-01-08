@@ -2,7 +2,7 @@ import path from 'path';
 import { Worker } from 'worker_threads';
 import { exec } from 'child_process';
 
-export const splitFiles = (
+export const splitTasksPerThread = (
 	tasks: string[],
 	threadCount: number,
 ): string[][] => {
@@ -17,27 +17,27 @@ export const splitFiles = (
 };
 
 export const runThreads = async <T>(
-	filesPerThread: string[][],
+	tasksPerThread: string[][],
 	options: T,
 	tsWorkerPath: string,
-	logger: Console,
+	logger: (message?: string | undefined, ...args: any[]) => void,
 ): Promise<void> =>
 	new Promise((resolve) => {
 		const threads = new Set();
 
-		filesPerThread.forEach((files, thread) => {
+		tasksPerThread.forEach((tasks, thread) => {
 			const worker = new Worker(path.join(__dirname, './worker.js'), {
 				workerData: {
 					path: tsWorkerPath,
 					threadNumber: thread,
-					files,
+					tasks,
 					options,
 				},
 			});
 
 			threads.add(worker);
 
-			worker.on('message', (message) => logger.log(message));
+			worker.on('message', (message) => logger(message));
 
 			worker.on('exit', () => {
 				threads.delete(worker);
