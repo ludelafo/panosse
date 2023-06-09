@@ -1,0 +1,85 @@
+# where to look for music files (default is current directory)
+input: ~/Music
+
+# ignore warnings and errors
+force: true
+
+# dry run
+dry-run: true
+
+# log file location
+log-file: panosse.log
+
+# verbose output
+verbose: false
+
+# fill missing tags with "[No <tag>]"
+fill-missing-tags: true
+
+# remove application blocks
+remove-application-blocks: true
+
+# remove cuesheet blocks
+remove-cuesheet-blocks: true
+
+# remove embedded blocks
+remove-embedded-blocks: true
+
+# remove padding blocks
+remove-padding-plocks: true
+
+# remove picture blocks
+remove-picture-blocks: true
+
+# remove seektable blocks
+remove-seektable-blocks: true
+
+# tags to keep
+tags-to-keep:
+  - ALBUM
+  - ALBUMARTIST
+  - ARTIST
+  - COMMENT
+  - DISCNUMBER
+  - ENCODER-SETTINGS
+  - GENRE
+  - REPLAYGAIN-SETTINGS
+  - REPLAYGAIN-REFERENCE-LOUDNESS
+  - REPLAYGAIN-ALBUM-GAIN
+  - REPLAYGAIN-ALBUM-PEAK
+  - REPLAYGAIN-TRACK-GAIN
+  - REPLAYGAIN-TRACK-PEAK
+  - TITLE
+  - TRACKNUMBER
+  - TOTALDISCS
+  - TOTALTRACKS
+  - YEAR
+
+# encode if versions mismatch between current FLAC version and file's FLAC version
+encode-if-versions-mismatch: true
+
+# encode if encoder settings tag is not present
+encode-if-encoder-settings-tag-is-not-present: true
+
+# encoder settings tag name
+encoder-settings-tag-name: ENCODER_SETTINGS
+
+# encoder settings
+encoder-settings:
+  - flac
+  - --compression-level-8
+  - --delete-input-file
+  - --no-padding
+  - --force
+  - --verify
+  - --warnings-as-errors
+  - --silent
+
+# extract version from `flac --version` regex
+extract-version-from-flac-version-regex: flac ([\\d]+.[\\d]+.[\\d]+)
+
+# extract version from `metaflac --show-vendor-tag` regex
+extract-version-from-metaflac-show-vendor-tag-regex: reference libFLAC ([\\d]+.[\\d]+.[\\d]+) [\\d]+
+
+# save encoder settings in tag
+save-encoder-settings-in-tag: true

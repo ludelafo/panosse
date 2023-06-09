@@ -1,0 +1,6 @@
+{
+	"name": "Go Dev Container",
+	"image": "mcr.microsoft.com/devcontainers/go:0-1",
+	// Execute the post-create.sh script once the container is created
+	"postCreateCommand": ".devcontainer/post-create.sh"
+}
