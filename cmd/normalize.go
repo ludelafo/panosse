@@ -22,7 +22,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// normalizeCmd represents the normalize command
+var normalizeIfTagsAreNotPresent bool
+var normalizeTags []string
+var normalizerSettingsTagName string
+var normalizerSettings []string
+var saveNormalizerSettingsInTag bool
+
 var normalizeCmd = &cobra.Command{
 	Use:   "normalize",
 	Short: "Normalize FLAC files with ReplayGain",

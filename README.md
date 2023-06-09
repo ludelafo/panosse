@@ -1,6 +1,7 @@
 # panosse
 
-![GitHub](https://img.shields.io/github/license/ludelafo/panosse)
+[![Latest release](https://img.shields.io/github/v/release/ludelafo/panosse?include_prereleases)](https://github.com/ludelafo/panosse/releases)
+[![License](https://img.shields.io/github/license/ludelafo/panosse)](https://github.com/ludelafo/panosse) [![Issues](https://img.shields.io/github/issues/ludelafo/panosse)](https://github.com/ludelafo/panosse/issues) [![Pull requests](https://img.shields.io/github/issues-pr/ludelafo/panosse)](https://github.com/ludelafo/panosse/pulls) [![Discussions](https://img.shields.io/github/discussions/ludelafo/panosse)](https://github.com/ludelafo/panosse/discussions)
 
 panosse is a CLI tool to clean, encode, normalize and verify your FLAC music library.
 
@@ -34,7 +35,7 @@ The order of precedence is:
 
 ### Environment variables
 
-The environment variables can be set by prefexing the [flag name](#flags) with `PANOSSE_` and converting it to uppercase.
+The environment variables can be set by prefexing the [flag names](#flags) with `PANOSSE_` and converting them to uppercase.
 
 **Examples**
 
