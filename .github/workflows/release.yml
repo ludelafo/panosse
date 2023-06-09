@@ -1,8 +1,8 @@
-name: "Release Go Binaries on main"
+name: "Release"
 
 on:
-  push:
-    branches: [main]
+  release:
+    types: [created]
 
 jobs:
   releases-matrix:
@@ -21,8 +21,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-    - name: Set BUILD_TIME environment variable
-      run: echo BUILD_TIME=$(date -u +%Y%m%d-%H%M) >> ${GITHUB_ENV}
     - name: Release Go Binaries
       uses: wangyoucao577/go-release-action@v1
       with:
@@ -31,7 +29,5 @@ jobs:
         goarch: ${{ matrix.goarch }}
         extra_files: LICENSE README.md config.yml
         binary_name: panosse
-        release_tag: main
-        asset_name: "panosse-${{ env.BUILD_TIME }}-${{ matrix.goos }}-${{ matrix.goarch }}"
         md5sum: true
         sha256sum: true
