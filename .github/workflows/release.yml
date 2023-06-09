@@ -1,0 +1,37 @@
+name: "Release Go Binaries on main"
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  releases-matrix:
+    name: Release Go Binaries
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # build and publish in parallel: linux/386, linux/amd64, linux/arm64, windows/386, windows/amd64, darwin/amd64, darwin/arm64
+        goos: [linux, windows, darwin]
+        goarch: ["386", amd64, arm64]
+        exclude:
+          - goarch: "386"
+            goos: darwin
+          - goarch: arm64
+            goos: windows
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Set BUILD_TIME environment variable
+      run: echo BUILD_TIME=$(date -u +%Y%m%d-%H%M) >> ${GITHUB_ENV}
+    - name: Release Go Binaries
+      uses: wangyoucao577/go-release-action@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        extra_files: LICENSE README.md config.yml
+        binary_name: panosse
+        release_tag: main
+        asset_name: "panosse-${{ env.BUILD_TIME }}-${{ matrix.goos }}-${{ matrix.goarch }}"
+        md5sum: true
+        sha256sum: true

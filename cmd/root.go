@@ -38,7 +38,7 @@ var rootCmd = &cobra.Command{
 	Short: "Clean, encode, normalize and verify your FLAC music library",
 	Long: `panosse is a CLI tool to clean, encode, normalize and verify your FLAC music library.
 
-It is a wrapper around flac and metaflac and uses Cobra under the hood.
+It is a wrapper around flac and metaflac and uses Cobra and Viper under the hood.
 
 Examples:
 
