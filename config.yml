@@ -7,9 +7,6 @@ force: true
 # dry run
 dry-run: true
 
-# log file location
-log-file: panosse.log
-
 # verbose output
 verbose: false
 
@@ -58,8 +55,8 @@ tags-to-keep:
 # encode if versions mismatch between current FLAC version and file's FLAC version
 encode-if-versions-mismatch: true
 
-# encode if encoder settings tag is not present
-encode-if-encoder-settings-tag-is-not-present: true
+# encode if encoder settings tag is missing
+encode-if-encoder-settings-tag-is-missing: true
 
 # encoder settings tag name
 encoder-settings-tag-name: ENCODER_SETTINGS
@@ -83,3 +80,28 @@ extract-version-from-metaflac-show-vendor-tag-regex: reference libFLAC ([\\d]+.[
 
 # save encoder settings in tag
 save-encoder-settings-in-tag: true
+
+# normalize if ReplayGain settings tag is missing
+normalize-if-replaygain-settings-tag-is-missing: true
+
+# normalize if ReplayGain tags are missing
+normalize-if-replaygain-tags-are-missing: true
+
+# ReplayGain settings
+replaygain-settings:
+  - metaflac
+  - --add-replay-gain
+
+# ReplayGain settings tag name
+replaygain-settings-tag-name: REPLAYGAIN_SETTINGS
+
+# ReplayGain tags
+replaygain-tags:
+  - REPLAYGAIN_REFERENCE_LOUDNESS
+  - REPLAYGAIN_TRACK_GAIN
+  - REPLAYGAIN_TRACK_PEAK
+  - REPLAYGAIN_ALBUM_GAIN
+  - REPLAYGAIN_ALBUM_PEAK
+
+# save ReplayGain settings in tag
+save-replaygain-settings-in-tag: true

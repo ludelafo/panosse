@@ -1,1 +1,13 @@
+## panosse
+
+# Ignore all configuration files except `config.yml`
+*.yml
+*.yaml
+!config.yml
+
+# Ignore executables
 panosse
+panosse.exe
+
+# Ignore FLAC files
+*.flac

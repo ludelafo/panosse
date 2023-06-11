@@ -20,13 +20,15 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-var normalizeIfTagsAreNotPresent bool
-var normalizeTags []string
-var normalizerSettingsTagName string
-var normalizerSettings []string
-var saveNormalizerSettingsInTag bool
+var normalizeIfReplayGainSettingsTagIsMissing bool
+var normalizeIfReplayGainTagsAreMissing bool
+var replayGainSettings []string
+var replayGainSettingsTagName string
+var replayGainTags []string
+var saveReplayGainSettingsInTag bool
 
 var normalizeCmd = &cobra.Command{
 	Use:   "normalize",
@@ -42,13 +44,21 @@ Each directory containing FLAC files will be used to calculate the normalization
 func init() {
 	rootCmd.AddCommand(normalizeCmd)
 
-	// Here you will define your flags and configuration settings.
+	normalizeCmd.PersistentFlags().BoolVar(&normalizeIfReplayGainSettingsTagIsMissing, "normalize-if-replaygain-settings-tag-is-missing", true, "normalize if ReplayGain settings tag is missing")
+	normalizeCmd.PersistentFlags().BoolVar(&normalizeIfReplayGainTagsAreMissing, "normalize-if-replaygain-tags-are-missing", true, "normalize if ReplayGain tags are missing")
+	normalizeCmd.PersistentFlags().StringSliceVarP(&replayGainSettings, "replaygain-settings", "r", []string{
+		"metaflac",
+		"--add-replay-gain",
+	}, "ReplayGain settings")
+	normalizeCmd.PersistentFlags().StringVar(&replayGainSettingsTagName, "replaygain-settings-tag-name", "REPLAYGAIN_SETTINGS", "ReplayGain settings tag name")
+	normalizeCmd.PersistentFlags().StringSliceVarP(&replayGainTags, "replaygain-tags", "t", []string{
+		"REPLAYGAIN_REFERENCE_LOUDNESS",
+		"REPLAYGAIN_TRACK_GAIN",
+		"REPLAYGAIN_TRACK_PEAK",
+		"REPLAYGAIN_ALBUM_GAIN",
+		"REPLAYGAIN_ALBUM_PEAK",
+	}, "ReplayGain tags")
+	normalizeCmd.PersistentFlags().BoolVar(&saveReplayGainSettingsInTag, "save-replaygain-settings-in-tag", true, "save ReplayGain settings in tag")
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// normalizeCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// normalizeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	viper.BindPFlags(normalizeCmd.PersistentFlags())
 }

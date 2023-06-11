@@ -24,7 +24,7 @@ import (
 )
 
 var encodeIfVersionsMismatch bool
-var encodeIfEncoderSettingsTagIsNotPresent bool
+var encodeIfEncoderSettingsTagIsMissing bool
 var encoderSettingsTagName string
 var encoderSettings []string
 var extractVersionFromFlacVersionRegex string
@@ -46,7 +46,7 @@ func init() {
 	rootCmd.AddCommand(encodeCmd)
 
 	encodeCmd.PersistentFlags().BoolVar(&encodeIfVersionsMismatch, "encode-if-versions-mismatch", true, "encode if versions mismatch between current FLAC version and file's FLAC version")
-	encodeCmd.PersistentFlags().BoolVar(&encodeIfEncoderSettingsTagIsNotPresent, "encode-if-encoder-settings-tag-is-not-present", true, "encode if encoder settings tag is not present")
+	encodeCmd.PersistentFlags().BoolVar(&encodeIfEncoderSettingsTagIsMissing, "encode-if-encoder-settings-tag-is-missing", true, "encode if encoder settings tag is missing")
 	encodeCmd.PersistentFlags().StringVar(&encoderSettingsTagName, "encoder-settings-tag-name", "ENCODER_SETTINGS", "encoder settings tag name")
 	encodeCmd.PersistentFlags().StringSliceVarP(&encoderSettings, "encoder-settings", "e", []string{
 		"flac",

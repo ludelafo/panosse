@@ -30,7 +30,6 @@ var configFile string
 var input string
 var force bool
 var dryRun bool
-var logFile string
 var verbose bool
 
 var rootCmd = &cobra.Command{
@@ -72,7 +71,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&input, "input", "I", "", "where to look for music files (default is current directory)")
 	rootCmd.PersistentFlags().BoolVarP(&force, "force", "F", false, "ignore warnings and errors")
 	rootCmd.PersistentFlags().BoolVarP(&dryRun, "dry-run", "D", false, "dry run")
-	rootCmd.PersistentFlags().StringVarP(&logFile, "log-file", "L", "", "log file location")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "V", false, "verbose output")
 
 	viper.BindPFlags(rootCmd.PersistentFlags())

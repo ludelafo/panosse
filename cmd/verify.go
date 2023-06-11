@@ -17,7 +17,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
+	"bytes"
 	"fmt"
+	"os"
+	"os/exec"
 
 	"github.com/spf13/cobra"
 )
@@ -29,6 +32,23 @@ var verifyCmd = &cobra.Command{
 	Long:  `Verify FLAC files.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("verify called")
+
+		var stdout bytes.Buffer
+		flacVerify := exec.Command("flac", "--test", "uncommon_11 - file starting with unparsable data")
+		flacVerify.Stdout = &stdout
+
+		err := flacVerify.Run()
+		if err != nil {
+			if exitError, ok := err.(*exec.ExitError); ok {
+				// Command failed with non-zero exit code
+				resultCode := exitError.ExitCode()
+				fmt.Fprintf(os.Stderr, "flac execution failed with result code: %d, %s", resultCode, stdout.String())
+			} else {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			}
+		}
+
+		fmt.Println(stdout.String())
 	},
 }
 
