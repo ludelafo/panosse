@@ -1,17 +1,24 @@
-# where to look for music files (default is current directory)
-input: ~/Music
+## Common
 
-# ignore warnings and errors
-force: true
+# flac command
+flac-command: "flac"
+
+# metaflac command
+metaflac-command: "metaflac"
 
 # dry run
-dry-run: true
+dry-run: false
 
 # verbose output
-verbose: false
+verbose: true
 
-# fill missing tags with "[No <tag>]"
+## Clean
+
+# fill missing tags
 fill-missing-tags: true
+
+# fill missing tag content
+fill-missing-tags-content: "No content for this tag"
 
 # remove application blocks
 remove-application-blocks: true
@@ -19,11 +26,8 @@ remove-application-blocks: true
 # remove cuesheet blocks
 remove-cuesheet-blocks: true
 
-# remove embedded blocks
-remove-embedded-blocks: true
-
 # remove padding blocks
-remove-padding-plocks: true
+remove-padding-blocks: true
 
 # remove picture blocks
 remove-picture-blocks: true
@@ -31,77 +35,91 @@ remove-picture-blocks: true
 # remove seektable blocks
 remove-seektable-blocks: true
 
+# clean settings
+clean-settings:
+  - "--remove"
+  - "--dont-use-padding"
+  - "--block-type=APPLICATION"
+  - "--block-type=CUESHEET"
+  - "--block-type=PADDING"
+  - "--block-type=PICTURE"
+  - "--block-type=SEEKTABLE"
+  - 
+
 # tags to keep
 tags-to-keep:
-  - ALBUM
-  - ALBUMARTIST
-  - ARTIST
-  - COMMENT
-  - DISCNUMBER
-  - ENCODER-SETTINGS
-  - GENRE
-  - REPLAYGAIN-SETTINGS
-  - REPLAYGAIN-REFERENCE-LOUDNESS
-  - REPLAYGAIN-ALBUM-GAIN
-  - REPLAYGAIN-ALBUM-PEAK
-  - REPLAYGAIN-TRACK-GAIN
-  - REPLAYGAIN-TRACK-PEAK
-  - TITLE
-  - TRACKNUMBER
-  - TOTALDISCS
-  - TOTALTRACKS
-  - YEAR
+  - "ALBUM"
+  - "ALBUMARTIST"
+  - "ARTIST"
+  - "COMMENT"
+  - "DISCNUMBER"
+  - "ENCODER_SETTINGS"
+  - "GENRE"
+  - "REPLAYGAIN_SETTINGS"
+  - "REPLAYGAIN_REFERENCE_LOUDNESS"
+  - "REPLAYGAIN_ALBUM_GAIN"
+  - "REPLAYGAIN_ALBUM_PEAK"
+  - "REPLAYGAIN_TRACK_GAIN"
+  - "REPLAYGAIN_TRACK_PEAK"
+  - "TITLE"
+  - "TRACKNUMBER"
+  - "TOTALDISCS"
+  - "TOTALTRACKS"
+  - "YEAR"
 
-# encode if versions mismatch between current FLAC version and file's FLAC version
-encode-if-versions-mismatch: true
+## Encode
 
-# encode if encoder settings tag is missing
-encode-if-encoder-settings-tag-is-missing: true
+# encode if flac versions mismatch between host's flac version and file's flac version
+encode-if-flac-versions-mismatch: true
 
-# encoder settings tag name
-encoder-settings-tag-name: ENCODER_SETTINGS
+# encode if encode settings mismatch
+encode-if-encode-settings-mismatch: true
 
-# encoder settings
-encoder-settings:
-  - flac
-  - --compression-level-8
-  - --delete-input-file
-  - --no-padding
-  - --force
-  - --verify
-  - --warnings-as-errors
-  - --silent
+# save encode settings in tag
+save-encode-settings-in-tag: true
 
-# extract version from `flac --version` regex
-extract-version-from-flac-version-regex: flac ([\\d]+.[\\d]+.[\\d]+)
+# encode settings tag name
+encode-settings-tag-name: "FLAC_SETTINGS"
 
-# extract version from `metaflac --show-vendor-tag` regex
-extract-version-from-metaflac-show-vendor-tag-regex: reference libFLAC ([\\d]+.[\\d]+.[\\d]+) [\\d]+
+# encode settings
+encode-settings:
+  - "--compression-level-8"
+  - "--delete-input-file"
+  - "--no-padding"
+  - "--force"
+  - "--verify"
+  - "--warnings-as-errors"
+  - "--silent"
 
-# save encoder settings in tag
-save-encoder-settings-in-tag: true
+## Normalize
 
-# normalize if ReplayGain settings tag is missing
-normalize-if-replaygain-settings-tag-is-missing: true
+# normalize if normalize command arguments tag is missing
+normalize-if-normalize-command-arguments-tag-is-missing: true
+
+# save normalize command arguments in tag
+save-normalize-command-arguments-in-tag: true
+
+# normalize command arguments tag name
+normalize-command-arguments-tag-name: "REPLAYGAIN_SETTINGS"
+
+# ReplayGain settings
+normalize-command-arguments:
+  - "--add-replay-gain"
 
 # normalize if ReplayGain tags are missing
 normalize-if-replaygain-tags-are-missing: true
 
-# ReplayGain settings
-replaygain-settings:
-  - metaflac
-  - --add-replay-gain
-
-# ReplayGain settings tag name
-replaygain-settings-tag-name: REPLAYGAIN_SETTINGS
-
 # ReplayGain tags
 replaygain-tags:
-  - REPLAYGAIN_REFERENCE_LOUDNESS
-  - REPLAYGAIN_TRACK_GAIN
-  - REPLAYGAIN_TRACK_PEAK
-  - REPLAYGAIN_ALBUM_GAIN
-  - REPLAYGAIN_ALBUM_PEAK
+  - "REPLAYGAIN_REFERENCE_LOUDNESS"
+  - "REPLAYGAIN_TRACK_GAIN"
+  - "REPLAYGAIN_TRACK_PEAK"
+  - "REPLAYGAIN_ALBUM_GAIN"
+  - "REPLAYGAIN_ALBUM_PEAK"
 
-# save ReplayGain settings in tag
-save-replaygain-settings-in-tag: true
+## Verify
+
+# verify settings
+verify-command-arguments:
+  - "--test"
+  - "--silent"

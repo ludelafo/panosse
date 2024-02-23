@@ -36,6 +36,7 @@ var normalizeCmd = &cobra.Command{
 	Long: `Normalize FLAC files by calculating and adding ReplayGain to them.
 	
 Each directory containing FLAC files will be used to calculate the normalization.`,
+	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("normalize called")
 	},
@@ -47,7 +48,6 @@ func init() {
 	normalizeCmd.PersistentFlags().BoolVar(&normalizeIfReplayGainSettingsTagIsMissing, "normalize-if-replaygain-settings-tag-is-missing", true, "normalize if ReplayGain settings tag is missing")
 	normalizeCmd.PersistentFlags().BoolVar(&normalizeIfReplayGainTagsAreMissing, "normalize-if-replaygain-tags-are-missing", true, "normalize if ReplayGain tags are missing")
 	normalizeCmd.PersistentFlags().StringSliceVarP(&replayGainSettings, "replaygain-settings", "r", []string{
-		"metaflac",
 		"--add-replay-gain",
 	}, "ReplayGain settings")
 	normalizeCmd.PersistentFlags().StringVar(&replayGainSettingsTagName, "replaygain-settings-tag-name", "REPLAYGAIN_SETTINGS", "ReplayGain settings tag name")

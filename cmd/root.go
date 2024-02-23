@@ -26,32 +26,23 @@ import (
 	"github.com/spf13/viper"
 )
 
-var configFile string
-var input string
-var force bool
-var dryRun bool
-var verbose bool
+// Command arguments
+var (
+	flacCommand     string
+	metaflacCommand string
+	configFile      string
+	dryRun          bool
+	verbose         bool
+)
 
 var rootCmd = &cobra.Command{
-	Use:   "panosse",
-	Short: "Clean, encode, normalize and verify your FLAC music library",
+	Use:     "panosse",
+	Version: "0.1.0",
+	Short:   "Clean, encode, normalize and verify your FLAC music library",
 	Long: `panosse is a CLI tool to clean, encode, normalize and verify your FLAC music library.
 
-It is a wrapper around flac and metaflac and uses Cobra and Viper under the hood.
-
-Examples:
-
-Clean FLAC files
-panosse clean
-
-Encode FLAC files
-panosse encode
-
-Normalize FLAC files
-panosse normalize
-
-Verify FLAC files
-panosse verify`,
+panosse is a wrapper around flac and metaflac and uses Cobra and Viper under the hood.
+`,
 }
 
 func Execute() {
@@ -62,15 +53,17 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(initConfig, initViper)
 
 	rootCmd.CompletionOptions.HiddenDefaultCmd = true
+
 	rootCmd.SetHelpCommand(&cobra.Command{Hidden: true})
+	rootCmd.SetVersionTemplate("panosse v{{.Version}}\n")
 
 	rootCmd.PersistentFlags().StringVarP(&configFile, "config-file", "C", "", "config file (default is config.yaml or $HOME/.panosse/config.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&input, "input", "I", "", "where to look for music files (default is current directory)")
-	rootCmd.PersistentFlags().BoolVarP(&force, "force", "F", false, "ignore warnings and errors")
 	rootCmd.PersistentFlags().BoolVarP(&dryRun, "dry-run", "D", false, "dry run")
+	rootCmd.PersistentFlags().StringVarP(&flacCommand, "flac-command", "F", "flac", "flac command (check in $PATH as well)")
+	rootCmd.PersistentFlags().StringVarP(&metaflacCommand, "metaflac-command", "M", "metaflac", "metaflac command (check in $PATH as well)")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "V", false, "verbose output")
 
 	viper.BindPFlags(rootCmd.PersistentFlags())
@@ -90,16 +83,23 @@ func initConfig() {
 		viper.SetConfigType("yaml")
 	}
 
-	viper.SetEnvPrefix("PANOSSE")
+	viper.SetEnvPrefix("panosse")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
 	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()
 
 	if err == nil {
-		fmt.Fprintf(os.Stdout, "Using config file: %v\n", viper.ConfigFileUsed())
-	} else {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		if verbose {
+			fmt.Fprintf(os.Stdout, "using config file: %v\n", viper.ConfigFileUsed())
+		}
 	}
+}
+
+func initViper() {
+	// Get command line arguments from Viper
+	flacCommand = viper.GetString("flac-command")
+	metaflacCommand = viper.GetString("metaflac-command")
+	dryRun = viper.GetBool("dry-run")
+	verbose = viper.GetBool("verbose")
 }

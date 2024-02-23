@@ -18,38 +18,79 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"panosse/utils"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var encodeIfVersionsMismatch bool
-var encodeIfEncoderSettingsTagIsMissing bool
-var encoderSettingsTagName string
-var encoderSettings []string
-var extractVersionFromFlacVersionRegex string
-var extractVersionFromMetaflacShowVendorTagRegex string
-var saveEncoderSettingsInTag bool
+// Command arguments
+var (
+	encodeIfFlacVersionsMismatch   bool
+	encodeIfEncodeSettingsMismatch bool
+	saveEncodeSettingsInTag        bool
+	encodeSettingsTagName          string
+	encodeSettings                 []string
+)
 
 var encodeCmd = &cobra.Command{
 	Use:   "encode",
-	Short: "Encode FLAC files",
-	Long: `Encode FLAC files.
-	
-Each FLAC file will be encoded in-place.`,
+	Short: "Encode FLAC file",
+	Long:  `Encode FLAC file.`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("encode called")
+		// Get arguments for the command
+		flacFile := args[0]
+
+		// Command action
+		flacVersionFromFlacCommand := utils.GetFlacVersionFromFlacCommand(flacCommand, verbose)
+		flacVersionFromFlacFile := utils.GetFlacVersionFromFlacFile(metaflacCommand, flacFile, verbose)
+		encodeSettingsTagContent := utils.GetTag(metaflacCommand, encodeSettingsTagName, flacFile, verbose)
+		encodeSettingsAsString := strings.Join(encodeSettings, " ")
+
+		needToEncode := false
+
+		if encodeIfFlacVersionsMismatch && flacVersionFromFlacCommand != flacVersionFromFlacFile {
+			needToEncode = true
+		}
+
+		if encodeIfEncodeSettingsMismatch && encodeSettingsTagContent != encodeSettingsAsString {
+			needToEncode = true
+		}
+
+		if needToEncode {
+			if !dryRun {
+				utils.Encode(flacCommand, encodeSettings, flacFile, verbose)
+			}
+
+			if verbose {
+				fmt.Fprintf(os.Stdout, "file '%s' encoded\n", flacFile)
+			}
+		}
+
+		if saveEncodeSettingsInTag {
+			if !dryRun {
+				utils.RemoveTag(metaflacCommand, encodeSettingsTagName, flacFile, verbose)
+				utils.SetTag(metaflacCommand, encodeSettingsTagName, encodeSettingsAsString, flacFile, verbose)
+			}
+
+			if verbose {
+				fmt.Fprintf(os.Stdout, "file '%s' tag added\n", flacFile)
+			}
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(encodeCmd)
 
-	encodeCmd.PersistentFlags().BoolVar(&encodeIfVersionsMismatch, "encode-if-versions-mismatch", true, "encode if versions mismatch between current FLAC version and file's FLAC version")
-	encodeCmd.PersistentFlags().BoolVar(&encodeIfEncoderSettingsTagIsMissing, "encode-if-encoder-settings-tag-is-missing", true, "encode if encoder settings tag is missing")
-	encodeCmd.PersistentFlags().StringVar(&encoderSettingsTagName, "encoder-settings-tag-name", "ENCODER_SETTINGS", "encoder settings tag name")
-	encodeCmd.PersistentFlags().StringSliceVarP(&encoderSettings, "encoder-settings", "e", []string{
-		"flac",
+	encodeCmd.PersistentFlags().BoolVar(&encodeIfFlacVersionsMismatch, "encode-if-flac-versions-mismatch", true, "encode if flac versions mismatch between host's flac version and file's flac version")
+	encodeCmd.PersistentFlags().BoolVar(&encodeIfEncodeSettingsMismatch, "encode-if-encode-settings-mismatch", true, "encode if encode settings mismatch")
+	encodeCmd.PersistentFlags().BoolVar(&saveEncodeSettingsInTag, "save-encode-settings-in-tag", true, "save encode settings in tag")
+	encodeCmd.PersistentFlags().StringVar(&encodeSettingsTagName, "encode-settings-tag-name", "FLAC_SETTINGS", "encode settings tag name")
+	encodeCmd.PersistentFlags().StringSliceVar(&encodeSettings, "encode-settings", []string{
 		"--compression-level-8",
 		"--delete-input-file",
 		"--no-padding",
@@ -57,10 +98,7 @@ func init() {
 		"--verify",
 		"--warnings-as-errors",
 		"--silent",
-	}, "encoder settings")
-	encodeCmd.PersistentFlags().StringVar(&extractVersionFromFlacVersionRegex, "extract-version-from-flac-version-regex", "flac ([\\d]+.[\\d]+.[\\d]+)", "extract version from `flac --version` regex")
-	encodeCmd.PersistentFlags().StringVar(&extractVersionFromMetaflacShowVendorTagRegex, "extract-version-from-metaflac-show-vendor-tag-regex", "reference libFLAC ([\\d]+.[\\d]+.[\\d]+) [\\d]+", "extract version from `metaflac --show-vendor-tag` regex")
-	encodeCmd.PersistentFlags().BoolVar(&saveEncoderSettingsInTag, "save-encoder-settings-in-tag", true, "save encoder settings in tag")
+	}, "encode settings")
 
 	viper.BindPFlags(encodeCmd.PersistentFlags())
 }

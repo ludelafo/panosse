@@ -69,10 +69,32 @@ If no configuration file is found, the default values are used from the [flags](
 input: path/to/your/music/library
 ```
 
+## Development
+
+### Build panosse
+
+You must have [Go](https://go.dev/) installed and configured to build panosse.
+
+Once Go is installed, build panosse with the following command:
+
+```sh
+# Build panosse
+go build
+```
+
+### Run panosse
+
+Once panosse is built, you can run it with the following command:
+
+```sh
+# Run panosse
+./panosse
+```
+
 ## What does panosse mean?
 
 panosse (`/pa.nɔs/`) is a Swiss-French word meaning mop. The idea is that a mop cleans a floor, panosse cleans FLAC files.
 
 ## License
 
-panosse is licensed under the [GNU Affero General Public License (GNU AGPL-3.0)](./LICENSE).
+panosse is licensed under the [GNU Affero General Public License (GNU AGPL-3.0)](./COPYING).

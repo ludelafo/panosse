@@ -17,51 +17,52 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
-	"bytes"
 	"fmt"
 	"os"
-	"os/exec"
+	"panosse/utils"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-// verifyCmd represents the verify command
+// Command arguments
+var (
+	verifyCommandArguments []string
+)
+
 var verifyCmd = &cobra.Command{
-	Use:   "verify",
-	Short: "Verify FLAC files",
-	Long:  `Verify FLAC files.`,
+	Use:     "verify",
+	Version: rootCmd.Version,
+	Short:   "Verify FLAC files",
+	Long:    `Verify FLAC files.`,
+	Args:    cobra.ExactArgs(1),
+	PreRun: func(cmd *cobra.Command, args []string) {
+		// Get command line arguments from Viper
+		verifyCommandArguments = viper.GetStringSlice("verify-command-arguments")
+	},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("verify called")
+		// Get arguments for the command
+		flacFile := args[0]
 
-		var stdout bytes.Buffer
-		flacVerify := exec.Command("flac", "--test", "uncommon_11 - file starting with unparsable data")
-		flacVerify.Stdout = &stdout
-
-		err := flacVerify.Run()
-		if err != nil {
-			if exitError, ok := err.(*exec.ExitError); ok {
-				// Command failed with non-zero exit code
-				resultCode := exitError.ExitCode()
-				fmt.Fprintf(os.Stderr, "flac execution failed with result code: %d, %s", resultCode, stdout.String())
-			} else {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			}
+		if !dryRun {
+			utils.Verify(flacCommand, verifyCommandArguments, flacFile, verbose)
 		}
 
-		fmt.Println(stdout.String())
+		if verbose {
+			fmt.Fprintf(os.Stdout, "file '%s' verified\n", flacFile)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(verifyCmd)
 
-	// Here you will define your flags and configuration settings.
+	cobra.OnInitialize()
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// verifyCmd.PersistentFlags().String("foo", "", "A help for foo")
+	verifyCmd.PersistentFlags().StringSliceVar(&verifyCommandArguments, "verify-command-arguments", []string{
+		"--test",
+		"--silent",
+	}, "verify settings")
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// verifyCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	viper.BindPFlags(verifyCmd.PersistentFlags())
 }
