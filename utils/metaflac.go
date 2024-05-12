@@ -85,7 +85,7 @@ func SetTag(metaflacCommand string, tag string, tagContent string, flacFile stri
 }
 
 func RemoveAllTags(metaflacCommand string, flacFile string, verbose bool) {
-	commandExec := exec.Command(metaflacCommand, "--remove-all-tags", "--dont-use-padding", flacFile)
+	commandExec := exec.Command(metaflacCommand, "--remove-all-tags", flacFile)
 	commandOutput, err := commandExec.CombinedOutput()
 
 	if err != nil {

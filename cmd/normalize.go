@@ -23,42 +23,50 @@ import (
 	"github.com/spf13/viper"
 )
 
-var normalizeIfReplayGainSettingsTagIsMissing bool
+var normalizeArguments []string
+var normalizeArgumentsTagName string
+var normalizeIfReplayGainArgumentsTagIsMissing bool
 var normalizeIfReplayGainTagsAreMissing bool
-var replayGainSettings []string
-var replayGainSettingsTagName string
-var replayGainTags []string
-var saveReplayGainSettingsInTag bool
+var normalizeTags []string
+var saveNormalizeArgumentsInTag bool
 
 var normalizeCmd = &cobra.Command{
-	Use:   "normalize",
+	Use:   "normalize <file 1> [<file 2> ... <file N>]",
 	Short: "Normalize FLAC files with ReplayGain",
-	Long: `Normalize FLAC files by calculating and adding ReplayGain to them.
-	
-Each directory containing FLAC files will be used to calculate the normalization.`,
-	Args: cobra.MinimumNArgs(1),
+	Long:  `Normalize FLAC files with ReplayGain.`,
+	Args:  cobra.MinimumNArgs(1),
+	PreRun: func(cmd *cobra.Command, args []string) {
+		// Get command line arguments from Viper
+		normalizeArguments = viper.GetStringSlice("normalize-arguments")
+		normalizeArgumentsTagName = viper.GetString("normalize-arguments-tag-name")
+		normalizeIfReplayGainArgumentsTagIsMissing = viper.GetBool("normalize-if-normalize-arguments-tag-is-missing")
+		normalizeIfReplayGainTagsAreMissing = viper.GetBool("normalize-if-replaygain-tags-are-missing")
+		normalizeTags = viper.GetStringSlice("replaygain-tags")
+		saveNormalizeArgumentsInTag = viper.GetBool("save-normalize-arguments-in-tag")
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("normalize called")
+		fmt.Println(args)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(normalizeCmd)
 
-	normalizeCmd.PersistentFlags().BoolVar(&normalizeIfReplayGainSettingsTagIsMissing, "normalize-if-replaygain-settings-tag-is-missing", true, "normalize if ReplayGain settings tag is missing")
-	normalizeCmd.PersistentFlags().BoolVar(&normalizeIfReplayGainTagsAreMissing, "normalize-if-replaygain-tags-are-missing", true, "normalize if ReplayGain tags are missing")
-	normalizeCmd.PersistentFlags().StringSliceVarP(&replayGainSettings, "replaygain-settings", "r", []string{
+	normalizeCmd.PersistentFlags().StringSliceVarP(&normalizeArguments, "normalize-arguments", "a", []string{
 		"--add-replay-gain",
-	}, "ReplayGain settings")
-	normalizeCmd.PersistentFlags().StringVar(&replayGainSettingsTagName, "replaygain-settings-tag-name", "REPLAYGAIN_SETTINGS", "ReplayGain settings tag name")
-	normalizeCmd.PersistentFlags().StringSliceVarP(&replayGainTags, "replaygain-tags", "t", []string{
+	}, "normalize arguments")
+	normalizeCmd.PersistentFlags().StringVar(&normalizeArgumentsTagName, "normalize-arguments-tag-name", "NORMALIZE_ARGUMENTS", "normalize arguments tag name")
+	normalizeCmd.PersistentFlags().BoolVar(&normalizeIfReplayGainArgumentsTagIsMissing, "normalize-if-normalize-arguments-tag-is-missing", true, "normalize if normalize arguments tag is missing")
+	normalizeCmd.PersistentFlags().BoolVar(&normalizeIfReplayGainTagsAreMissing, "normalize-if-replaygain-tags-are-missing", true, "normalize if ReplayGain tags are missing")
+	normalizeCmd.PersistentFlags().StringSliceVarP(&normalizeTags, "replaygain-tags", "t", []string{
 		"REPLAYGAIN_REFERENCE_LOUDNESS",
 		"REPLAYGAIN_TRACK_GAIN",
 		"REPLAYGAIN_TRACK_PEAK",
 		"REPLAYGAIN_ALBUM_GAIN",
 		"REPLAYGAIN_ALBUM_PEAK",
 	}, "ReplayGain tags")
-	normalizeCmd.PersistentFlags().BoolVar(&saveReplayGainSettingsInTag, "save-replaygain-settings-in-tag", true, "save ReplayGain settings in tag")
+	normalizeCmd.PersistentFlags().BoolVar(&saveNormalizeArgumentsInTag, "save-normalize-arguments-in-tag", true, "save ReplayGain settings in tag")
 
 	viper.BindPFlags(normalizeCmd.PersistentFlags())
 }

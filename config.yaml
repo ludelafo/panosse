@@ -20,32 +20,6 @@ fill-missing-tags: true
 # fill missing tag content
 fill-missing-tags-content: "No content for this tag"
 
-# remove application blocks
-remove-application-blocks: true
-
-# remove cuesheet blocks
-remove-cuesheet-blocks: true
-
-# remove padding blocks
-remove-padding-blocks: true
-
-# remove picture blocks
-remove-picture-blocks: true
-
-# remove seektable blocks
-remove-seektable-blocks: true
-
-# clean settings
-clean-settings:
-  - "--remove"
-  - "--dont-use-padding"
-  - "--block-type=APPLICATION"
-  - "--block-type=CUESHEET"
-  - "--block-type=PADDING"
-  - "--block-type=PICTURE"
-  - "--block-type=SEEKTABLE"
-  - 
-
 # tags to keep
 tags-to-keep:
   - "ALBUM"
@@ -67,22 +41,32 @@ tags-to-keep:
   - "TOTALTRACKS"
   - "YEAR"
 
+# clean arguments
+clean-arguments:
+  - "--remove"
+  - "--dont-use-padding"
+  - "--block-type=APPLICATION"
+  - "--block-type=CUESHEET"
+  - "--block-type=PADDING"
+  - "--block-type=PICTURE"
+  - "--block-type=SEEKTABLE"
+
 ## Encode
 
 # encode if flac versions mismatch between host's flac version and file's flac version
 encode-if-flac-versions-mismatch: true
 
-# encode if encode settings mismatch
-encode-if-encode-settings-mismatch: true
+# encode if encode arguments mismatch
+encode-if-encode-arguments-mismatch: true
 
-# save encode settings in tag
-save-encode-settings-in-tag: true
+# save encode arguments in tag
+save-encode-arguments-in-tag: true
 
-# encode settings tag name
-encode-settings-tag-name: "FLAC_SETTINGS"
+# encode arguments tag name
+encode-arguments-tag-name: "FLAC_ARGUMENTS"
 
-# encode settings
-encode-settings:
+# encode arguments
+encode-arguments:
   - "--compression-level-8"
   - "--delete-input-file"
   - "--no-padding"
@@ -93,18 +77,15 @@ encode-settings:
 
 ## Normalize
 
-# normalize if normalize command arguments tag is missing
-normalize-if-normalize-command-arguments-tag-is-missing: true
-
-# save normalize command arguments in tag
-save-normalize-command-arguments-in-tag: true
-
-# normalize command arguments tag name
-normalize-command-arguments-tag-name: "REPLAYGAIN_SETTINGS"
-
-# ReplayGain settings
-normalize-command-arguments:
+# ReplayGain arguments
+normalize-arguments:
   - "--add-replay-gain"
+
+# normalize arguments tag name
+normalize-arguments-tag-name: "REPLAYGAIN_ARGUMENTS"
+
+# normalize if normalize arguments tag is missing
+normalize-if-normalize-arguments-tag-is-missing: true
 
 # normalize if ReplayGain tags are missing
 normalize-if-replaygain-tags-are-missing: true
@@ -117,9 +98,12 @@ replaygain-tags:
   - "REPLAYGAIN_ALBUM_GAIN"
   - "REPLAYGAIN_ALBUM_PEAK"
 
+# save normalize arguments in tag
+save-normalize-arguments-in-tag: true
+
 ## Verify
 
-# verify settings
-verify-command-arguments:
+# verify arguments
+verify-arguments:
   - "--test"
   - "--silent"

@@ -27,25 +27,25 @@ import (
 
 // Command arguments
 var (
-	verifyCommandArguments []string
+	verifyArguments []string
 )
 
 var verifyCmd = &cobra.Command{
-	Use:     "verify",
+	Use:     "verify <file>",
 	Version: rootCmd.Version,
 	Short:   "Verify FLAC files",
 	Long:    `Verify FLAC files.`,
 	Args:    cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		// Get command line arguments from Viper
-		verifyCommandArguments = viper.GetStringSlice("verify-command-arguments")
+		verifyArguments = viper.GetStringSlice("verify-arguments")
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get arguments for the command
 		flacFile := args[0]
 
 		if !dryRun {
-			utils.Verify(flacCommand, verifyCommandArguments, flacFile, verbose)
+			utils.Verify(flacCommand, verifyArguments, flacFile, verbose)
 		}
 
 		if verbose {
@@ -59,10 +59,10 @@ func init() {
 
 	cobra.OnInitialize()
 
-	verifyCmd.PersistentFlags().StringSliceVar(&verifyCommandArguments, "verify-command-arguments", []string{
+	verifyCmd.PersistentFlags().StringSliceVarP(&verifyArguments, "verify-arguments", "a", []string{
 		"--test",
 		"--silent",
-	}, "verify settings")
+	}, "verify arguments")
 
 	viper.BindPFlags(verifyCmd.PersistentFlags())
 }

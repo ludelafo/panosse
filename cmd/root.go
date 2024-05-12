@@ -38,8 +38,8 @@ var (
 var rootCmd = &cobra.Command{
 	Use:     "panosse",
 	Version: "0.1.0",
-	Short:   "Clean, encode, normalize and verify your FLAC music library",
-	Long: `panosse is a CLI tool to clean, encode, normalize and verify your FLAC music library.
+	Short:   "Clean, encode, normalize, and verify your FLAC music library",
+	Long: `panosse is a CLI tool to clean, encode, normalize, and verify your FLAC music library.
 
 panosse is a wrapper around flac and metaflac and uses Cobra and Viper under the hood.
 `,
@@ -60,7 +60,7 @@ func init() {
 	rootCmd.SetHelpCommand(&cobra.Command{Hidden: true})
 	rootCmd.SetVersionTemplate("panosse v{{.Version}}\n")
 
-	rootCmd.PersistentFlags().StringVarP(&configFile, "config-file", "C", "", "config file (default is config.yaml or $HOME/.panosse/config.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&configFile, "config-file", "C", "", "config file (default is \"./config.yaml\" or \"~/.panosse/config.yaml\")")
 	rootCmd.PersistentFlags().BoolVarP(&dryRun, "dry-run", "D", false, "dry run")
 	rootCmd.PersistentFlags().StringVarP(&flacCommand, "flac-command", "F", "flac", "flac command (check in $PATH as well)")
 	rootCmd.PersistentFlags().StringVarP(&metaflacCommand, "metaflac-command", "M", "metaflac", "metaflac command (check in $PATH as well)")

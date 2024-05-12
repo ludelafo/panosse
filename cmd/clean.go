@@ -17,6 +17,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
+	"fmt"
+	"os"
 	"panosse/utils"
 
 	"github.com/spf13/cobra"
@@ -25,18 +27,14 @@ import (
 
 // Command arguments
 var (
-	fillMissingTags         bool
-	fillMissingTagsWith     string
-	removeApplicationBlocks bool
-	removeCuesheetBlocks    bool
-	removePaddingBlocks     bool
-	removePictureBlocks     bool
-	removeSeektableBlocks   bool
-	tagsToKeep              []string
+	fillMissingTags     bool
+	fillMissingTagsWith string
+	cleanArguments      []string
+	tagsToKeep          []string
 )
 
 var cleanCmd = &cobra.Command{
-	Use:   "clean",
+	Use:   "clean <file>",
 	Short: "Clean FLAC files from tags and blocks",
 	Long:  `Clean FLAC files from tags and blocks.`,
 	Args:  cobra.ExactArgs(1),
@@ -44,11 +42,7 @@ var cleanCmd = &cobra.Command{
 		// Get command line arguments from Viper
 		fillMissingTags = viper.GetBool("fill-missing-tags")
 		fillMissingTagsWith = viper.GetString("fill-missing-tags-with")
-		removeApplicationBlocks = viper.GetBool("remove-application-blocks")
-		removeCuesheetBlocks = viper.GetBool("remove-cuesheet-blocks")
-		removePaddingBlocks = viper.GetBool("remove-padding-blocks")
-		removePictureBlocks = viper.GetBool("remove-picture-blocks")
-		removeSeektableBlocks = viper.GetBool("remove-seektable-blocks")
+		cleanArguments = viper.GetStringSlice("clean-arguments")
 		tagsToKeep = viper.GetStringSlice("tags-to-keep")
 	},
 	Run: func(cmd *cobra.Command, args []string) {
@@ -56,32 +50,6 @@ var cleanCmd = &cobra.Command{
 		flacFile := args[0]
 
 		// Command action
-		cleanCommand := []string{"--remove", "--dont-use-padding"}
-
-		if removeApplicationBlocks {
-			cleanCommand = append(cleanCommand, "--block-type=APPLICATION")
-		}
-
-		if removeCuesheetBlocks {
-			cleanCommand = append(cleanCommand, "--block-type=CUESHEET")
-		}
-
-		if removePaddingBlocks {
-			cleanCommand = append(cleanCommand, "--block-type=PADDING")
-		}
-
-		if removePictureBlocks {
-			cleanCommand = append(cleanCommand, "--block-type=PICTURE")
-		}
-
-		if removeSeektableBlocks {
-			cleanCommand = append(cleanCommand, "--block-type=SEEKTABLE")
-		}
-
-		if !dryRun {
-			utils.Clean(metaflacCommand, cleanCommand, flacFile, verbose)
-		}
-
 		tagsToKeepMap := map[string]string{}
 
 		for _, tagToKeep := range tagsToKeep {
@@ -103,6 +71,14 @@ var cleanCmd = &cobra.Command{
 				utils.SetTag(metaflacCommand, tagToKeep, tagContent, flacFile, verbose)
 			}
 		}
+
+		if !dryRun {
+			utils.Clean(metaflacCommand, cleanArguments, flacFile, verbose)
+		}
+
+		if verbose {
+			fmt.Fprintf(os.Stdout, "file '%s' cleaned\n", flacFile)
+		}
 	},
 }
 
@@ -111,11 +87,15 @@ func init() {
 
 	cleanCmd.PersistentFlags().BoolVar(&fillMissingTags, "fill-missing-tags", true, "fill missing tags")
 	cleanCmd.PersistentFlags().StringVar(&fillMissingTagsWith, "fill-missing-tags-content", "No content for this tag", "fill missing tags content")
-	cleanCmd.PersistentFlags().BoolVar(&removeApplicationBlocks, "remove-application-blocks", true, "remove application blocks")
-	cleanCmd.PersistentFlags().BoolVar(&removeCuesheetBlocks, "remove-cuesheet-blocks", true, "remove cuesheet blocks")
-	cleanCmd.PersistentFlags().BoolVar(&removePaddingBlocks, "remove-padding-blocks", true, "remove padding blocks")
-	cleanCmd.PersistentFlags().BoolVar(&removePictureBlocks, "remove-picture-blocks", true, "remove picture blocks")
-	cleanCmd.PersistentFlags().BoolVar(&removeSeektableBlocks, "remove-seektable-blocks", true, "remove seektable blocks")
+	cleanCmd.PersistentFlags().StringSliceVarP(&cleanArguments, "clean-arguments", "a", []string{
+		"--remove",
+		"--dont-use-padding",
+		"--block-type=APPLICATION",
+		"--block-type=CUESHEET",
+		"--block-type=PADDING",
+		"--block-type=PICTURE",
+		"--block-type=SEEKTABLE",
+	}, "clean arguments")
 	cleanCmd.PersistentFlags().StringSliceVarP(&tagsToKeep, "tags-to-keep", "t", []string{
 		"ALBUM",
 		"ALBUMARTIST",

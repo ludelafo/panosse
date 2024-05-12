@@ -1,13 +1,26 @@
 ## panosse
 
-# Ignore all configuration files except `config.yml`
-*.yml
-*.yaml
-!config.yml
-
 # Ignore executables
 panosse
 panosse.exe
 
 # Ignore FLAC files
 *.flac
+
+## Linux
+
+# Temporary files
+*~
+
+## macOS
+
+# Files created by macOS Finder
+.DS_Store
+
+## Windows
+
+# Windows thumbnail cache files
+Thumbs.db
+
+# Folder config file
+[Dd]esktop.ini

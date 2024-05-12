@@ -21,13 +21,14 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+
     - name: Release Go Binaries
       uses: wangyoucao577/go-release-action@v1
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
-        extra_files: LICENSE README.md config.yml
+        extra_files: LICENSE README.md config.yaml
         binary_name: panosse
         md5sum: true
         sha256sum: true
