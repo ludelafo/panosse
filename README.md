@@ -9,7 +9,7 @@
 panosse is a CLI tool to clean, encode, normalize, and verify your FLAC music
 library.
 
-It is a wrapper around
+It is merely a wrapper around
 [flac](https://xiph.org/flac/documentation_tools_flac.html) and
 [metaflac](https://xiph.org/flac/documentation_tools_metaflac.html) and uses
 [Cobra](https://github.com/spf13/cobra) and

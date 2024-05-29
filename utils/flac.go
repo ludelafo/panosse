@@ -17,47 +17,26 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package utils
 
 import (
-	"fmt"
-	"os"
+	"errors"
 	"os/exec"
 	"regexp"
 )
 
-func Encode(flacCommand string, encodeSettings []string, flacFile string, verbose bool) {
+func Encode(flacCommand string, encodeSettings []string, flacFile string) error {
 	commandExec := exec.Command(flacCommand, append(encodeSettings, flacFile)...)
-	commandOutput, err := commandExec.CombinedOutput()
+	err := commandExec.Run()
 
-	if err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
-			resultCode := exitError.ExitCode()
-
-			if verbose {
-				fmt.Fprintf(os.Stderr, "command execution failed with result code %d - output:\n%s", resultCode, string(commandOutput))
-			}
-		} else {
-			if verbose {
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			}
-		}
-	}
+	return err
 }
 
 const FlacVersionFromFlacCommandRegex = "flac ([\\d]+.[\\d]+.[\\d]+)"
 
-func GetFlacVersionFromFlacCommand(flacCommand string, verbose bool) string {
+func GetFlacVersionFromFlacCommand(flacCommand string) (string, error) {
 	commandExec := exec.Command(flacCommand, "--version")
 	commandOutput, err := commandExec.CombinedOutput()
 
 	if err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
-			resultCode := exitError.ExitCode()
-
-			if verbose {
-				fmt.Fprintf(os.Stderr, "command execution failed with result code: %d - Output: %s", resultCode, string(commandOutput))
-			}
-		} else {
-			fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		}
+		return "", err
 	}
 
 	// Define the regular expression
@@ -73,27 +52,15 @@ func GetFlacVersionFromFlacCommand(flacCommand string, verbose bool) string {
 		// Extract the version from the second capturing group
 		flacVersion = matches[1]
 	} else {
-		fmt.Println("Unable to extract version.")
+		return "", errors.New("unable to extract version")
 	}
 
-	return flacVersion
+	return flacVersion, nil
 }
 
-func Verify(flacCommand string, verifyCommandArguments []string, flacFile string, verbose bool) {
+func Verify(flacCommand string, verifyCommandArguments []string, flacFile string) error {
 	commandExec := exec.Command(flacCommand, append(verifyCommandArguments, flacFile)...)
-	commandOutput, err := commandExec.CombinedOutput()
+	err := commandExec.Run()
 
-	if err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
-			resultCode := exitError.ExitCode()
-
-			if verbose {
-				fmt.Fprintf(os.Stderr, "command execution failed with result code %d - output:\n%s", resultCode, string(commandOutput))
-			}
-		} else {
-			if verbose {
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			}
-		}
-	}
+	return err
 }

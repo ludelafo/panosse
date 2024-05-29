@@ -17,8 +17,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
-	"fmt"
+	"log"
 	"os"
+	"os/exec"
 	"panosse/utils"
 
 	"github.com/spf13/cobra"
@@ -27,10 +28,10 @@ import (
 
 // Command arguments
 var (
-	fillMissingTags     bool
-	fillMissingTagsWith string
-	cleanArguments      []string
-	tagsToKeep          []string
+	cleanArguments         []string
+	fillMissingTags        bool
+	fillMissingTagsContent string
+	tagsToKeep             []string
 )
 
 var cleanCmd = &cobra.Command{
@@ -40,9 +41,9 @@ var cleanCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		// Get command line arguments from Viper
-		fillMissingTags = viper.GetBool("fill-missing-tags")
-		fillMissingTagsWith = viper.GetString("fill-missing-tags-with")
 		cleanArguments = viper.GetStringSlice("clean-arguments")
+		fillMissingTags = viper.GetBool("fill-missing-tags")
+		fillMissingTagsContent = viper.GetString("fill-missing-tags-content")
 		tagsToKeep = viper.GetStringSlice("tags-to-keep")
 	},
 	Run: func(cmd *cobra.Command, args []string) {
@@ -53,31 +54,72 @@ var cleanCmd = &cobra.Command{
 		tagsToKeepMap := map[string]string{}
 
 		for _, tagToKeep := range tagsToKeep {
-			tagContent := utils.GetTag(metaflacCommand, tagToKeep, flacFile, verbose)
+			tagContent, err := utils.GetTag(
+				metaflacCommand,
+				tagToKeep,
+				flacFile,
+			)
+
+			if err != nil {
+				if exitError, ok := err.(*exec.ExitError); ok {
+					resultCode := exitError.ExitCode()
+
+					if verbose {
+						log.Fatalf(
+							"cannot get tag from file '%s' (exit code %d)",
+							flacFile,
+							resultCode,
+						)
+					}
+				}
+
+				os.Exit(1)
+			}
 
 			if tagContent == "" && fillMissingTags {
-				tagsToKeepMap[tagToKeep] = fillMissingTagsWith
+				tagsToKeepMap[tagToKeep] = fillMissingTagsContent
 			} else {
 				tagsToKeepMap[tagToKeep] = tagContent
 			}
 		}
 
 		if !dryRun {
-			utils.RemoveAllTags(metaflacCommand, flacFile, verbose)
+			utils.RemoveAllTags(metaflacCommand, flacFile)
 		}
 
 		for tagToKeep, tagContent := range tagsToKeepMap {
 			if !dryRun {
-				utils.SetTag(metaflacCommand, tagToKeep, tagContent, flacFile, verbose)
+				utils.SetTag(
+					metaflacCommand,
+					tagToKeep,
+					tagContent,
+					flacFile,
+				)
 			}
 		}
 
 		if !dryRun {
-			utils.Clean(metaflacCommand, cleanArguments, flacFile, verbose)
+			err := utils.Clean(metaflacCommand, cleanArguments, flacFile)
+
+			if err != nil {
+				if exitError, ok := err.(*exec.ExitError); ok {
+					resultCode := exitError.ExitCode()
+
+					if verbose {
+						log.Fatalf(
+							"error cleaning file '%s' (exit code %d)",
+							flacFile,
+							resultCode,
+						)
+					}
+				}
+
+				os.Exit(1)
+			}
 		}
 
 		if verbose {
-			fmt.Fprintf(os.Stdout, "file '%s' cleaned\n", flacFile)
+			log.Printf("file '%s' cleaned\n", flacFile)
 		}
 	},
 }
@@ -85,37 +127,59 @@ var cleanCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(cleanCmd)
 
-	cleanCmd.PersistentFlags().BoolVar(&fillMissingTags, "fill-missing-tags", true, "fill missing tags")
-	cleanCmd.PersistentFlags().StringVar(&fillMissingTagsWith, "fill-missing-tags-content", "No content for this tag", "fill missing tags content")
-	cleanCmd.PersistentFlags().StringSliceVarP(&cleanArguments, "clean-arguments", "a", []string{
-		"--remove",
-		"--dont-use-padding",
-		"--block-type=APPLICATION",
-		"--block-type=CUESHEET",
-		"--block-type=PADDING",
-		"--block-type=PICTURE",
-		"--block-type=SEEKTABLE",
-	}, "clean arguments")
-	cleanCmd.PersistentFlags().StringSliceVarP(&tagsToKeep, "tags-to-keep", "t", []string{
-		"ALBUM",
-		"ALBUMARTIST",
-		"ARTIST",
-		"COMMENT",
-		"DISCNUMBER",
-		"ENCODER_SETTINGS",
-		"GENRE",
-		"REPLAYGAIN_SETTINGS",
-		"REPLAYGAIN_REFERENCE_LOUDNESS",
-		"REPLAYGAIN_ALBUM_GAIN",
-		"REPLAYGAIN_ALBUM_PEAK",
-		"REPLAYGAIN_TRACK_GAIN",
-		"REPLAYGAIN_TRACK_PEAK",
-		"TITLE",
-		"TRACKNUMBER",
-		"TOTALDISCS",
-		"TOTALTRACKS",
-		"YEAR",
-	}, "tags to keep")
+	cleanCmd.PersistentFlags().StringSliceVarP(
+		&cleanArguments,
+		"clean-arguments",
+		"a",
+		[]string{
+			"--remove",
+			"--dont-use-padding",
+			"--block-type=APPLICATION",
+			"--block-type=CUESHEET",
+			"--block-type=PADDING",
+			"--block-type=PICTURE",
+			"--block-type=SEEKTABLE",
+		},
+		"arguments passed to metaflac to clean the file",
+	)
+	cleanCmd.PersistentFlags().BoolVar(
+		&fillMissingTags,
+		"fill-missing-tags",
+		true,
+		"enable the fill of missing tags",
+	)
+	cleanCmd.PersistentFlags().StringVar(
+		&fillMissingTagsContent,
+		"fill-missing-tags-content",
+		"No content for this tag",
+		"fill missing tags content",
+	)
+	cleanCmd.PersistentFlags().StringSliceVarP(
+		&tagsToKeep,
+		"tags-to-keep",
+		"t",
+		[]string{
+			"ALBUM",
+			"ALBUMARTIST",
+			"ARTIST",
+			"COMMENT",
+			"DISCNUMBER",
+			"ENCODER_SETTINGS",
+			"GENRE",
+			"REPLAYGAIN_SETTINGS",
+			"REPLAYGAIN_REFERENCE_LOUDNESS",
+			"REPLAYGAIN_ALBUM_GAIN",
+			"REPLAYGAIN_ALBUM_PEAK",
+			"REPLAYGAIN_TRACK_GAIN",
+			"REPLAYGAIN_TRACK_PEAK",
+			"TITLE",
+			"TRACKNUMBER",
+			"TOTALDISCS",
+			"TOTALTRACKS",
+			"YEAR",
+		},
+		"tags to keep in the file",
+	)
 
 	viper.BindPFlags(cleanCmd.PersistentFlags())
 }

@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"path"
 	"strings"
@@ -41,8 +41,11 @@ var rootCmd = &cobra.Command{
 	Short:   "Clean, encode, normalize, and verify your FLAC music library",
 	Long: `panosse is a CLI tool to clean, encode, normalize, and verify your FLAC music library.
 
-panosse is a wrapper around flac and metaflac and uses Cobra and Viper under the hood.
-`,
+panosse is merely a wrapper around flac and metaflac and uses Cobra and Viper under the hood.
+
+panosse is licensed under the GNU Affero General Public License (GNU AGPL-3.0).
+
+For more information, see https://github.com/ludelafo/panosse.`,
 }
 
 func Execute() {
@@ -53,18 +56,47 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig, initViper)
+	cobra.OnInitialize(initConfig, initViper, initLogger)
 
 	rootCmd.CompletionOptions.HiddenDefaultCmd = true
 
-	rootCmd.SetHelpCommand(&cobra.Command{Hidden: true})
 	rootCmd.SetVersionTemplate("panosse v{{.Version}}\n")
 
-	rootCmd.PersistentFlags().StringVarP(&configFile, "config-file", "C", "", "config file (default is \"./config.yaml\" or \"~/.panosse/config.yaml\")")
-	rootCmd.PersistentFlags().BoolVarP(&dryRun, "dry-run", "D", false, "dry run")
-	rootCmd.PersistentFlags().StringVarP(&flacCommand, "flac-command", "F", "flac", "flac command (check in $PATH as well)")
-	rootCmd.PersistentFlags().StringVarP(&metaflacCommand, "metaflac-command", "M", "metaflac", "metaflac command (check in $PATH as well)")
-	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "V", false, "verbose output")
+	rootCmd.PersistentFlags().StringVarP(
+		&configFile,
+		"config-file",
+		"C",
+		"",
+		"config file to use (optional - will use \"./config.yaml\" or \"~/.panosse/config.yaml\" if available)",
+	)
+	rootCmd.PersistentFlags().BoolVarP(
+		&dryRun,
+		"dry-run",
+		"D",
+		false,
+		"perform a trial run with no changes made",
+	)
+	rootCmd.PersistentFlags().StringVarP(
+		&flacCommand,
+		"flac-command",
+		"F",
+		"flac",
+		"flac command (check in $PATH as well)",
+	)
+	rootCmd.PersistentFlags().StringVarP(
+		&metaflacCommand,
+		"metaflac-command",
+		"M",
+		"metaflac",
+		"metaflac command (check in $PATH as well)",
+	)
+	rootCmd.PersistentFlags().BoolVarP(
+		&verbose,
+		"verbose",
+		"V",
+		false,
+		"enable verbose output",
+	)
 
 	viper.BindPFlags(rootCmd.PersistentFlags())
 }
@@ -76,7 +108,7 @@ func initConfig() {
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 
-		// Search config.yaml in current directory or $HOME/.panosse
+		// Search config.yaml in current directory or ~/.panosse
 		viper.AddConfigPath(".")
 		viper.AddConfigPath(path.Join(home, ".panosse"))
 		viper.SetConfigName("config")
@@ -91,15 +123,22 @@ func initConfig() {
 
 	if err == nil {
 		if verbose {
-			fmt.Fprintf(os.Stdout, "using config file: %v\n", viper.ConfigFileUsed())
+			log.Printf(
+				"using config file: %v\n",
+				viper.ConfigFileUsed(),
+			)
 		}
 	}
 }
 
 func initViper() {
 	// Get command line arguments from Viper
+	dryRun = viper.GetBool("dry-run")
 	flacCommand = viper.GetString("flac-command")
 	metaflacCommand = viper.GetString("metaflac-command")
-	dryRun = viper.GetBool("dry-run")
 	verbose = viper.GetBool("verbose")
+}
+
+func initLogger() {
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 }

@@ -17,127 +17,67 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package utils
 
 import (
-	"fmt"
-	"os"
+	"errors"
 	"os/exec"
 	"regexp"
 )
 
-func Clean(metaflacCommand string, arguments []string, flacFile string, verbose bool) {
+func Clean(metaflacCommand string, arguments []string, flacFile string) error {
 	commandExec := exec.Command(metaflacCommand, append(arguments, flacFile)...)
-	commandOutput, err := commandExec.CombinedOutput()
+	err := commandExec.Run()
 
-	if err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
-			resultCode := exitError.ExitCode()
-
-			if verbose {
-				fmt.Fprintf(os.Stderr, "command execution failed with result code %d - output:\n%s", resultCode, string(commandOutput))
-			}
-		} else {
-			if verbose {
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			}
-		}
-	}
+	return err
 }
 
-func GetTag(metaflacCommand string, tag string, flacFile string, verbose bool) string {
+func Normalize(metaflacCommand string, arguments []string, flacFiles []string) error {
+	commandExec := exec.Command(metaflacCommand, append(arguments, flacFiles...)...)
+	err := commandExec.Run()
+
+	return err
+}
+
+func GetTag(metaflacCommand string, tag string, flacFile string) (string, error) {
 	commandExec := exec.Command(metaflacCommand, "--show-tag", tag, flacFile)
 	commandOutput, err := commandExec.CombinedOutput()
 
 	if err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
-			resultCode := exitError.ExitCode()
-
-			if verbose {
-				fmt.Fprintf(os.Stderr, "command execution failed with result code %d - output:\n%s", resultCode, string(commandOutput))
-			}
-		} else {
-			if verbose {
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			}
-		}
+		return "", err
 	}
 
 	tagContent := string(commandOutput)
 
-	return tagContent
+	return tagContent, nil
 }
 
-func SetTag(metaflacCommand string, tag string, tagContent string, flacFile string, verbose bool) {
+func SetTag(metaflacCommand string, tag string, tagContent string, flacFile string) error {
 	commandExec := exec.Command(metaflacCommand, "--set-tag", tag+"="+tagContent, flacFile)
-	commandOutput, err := commandExec.CombinedOutput()
+	err := commandExec.Run()
 
-	if err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
-			resultCode := exitError.ExitCode()
-
-			if verbose {
-				fmt.Fprintf(os.Stderr, "command execution failed with result code %d - output:\n%s", resultCode, string(commandOutput))
-			}
-		} else {
-			if verbose {
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			}
-		}
-	}
+	return err
 }
 
-func RemoveAllTags(metaflacCommand string, flacFile string, verbose bool) {
+func RemoveAllTags(metaflacCommand string, flacFile string) error {
 	commandExec := exec.Command(metaflacCommand, "--remove-all-tags", flacFile)
-	commandOutput, err := commandExec.CombinedOutput()
+	err := commandExec.Run()
 
-	if err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
-			resultCode := exitError.ExitCode()
-
-			if verbose {
-				fmt.Fprintf(os.Stderr, "command execution failed with result code %d - output:\n%s", resultCode, string(commandOutput))
-			}
-		} else {
-			if verbose {
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			}
-		}
-	}
+	return err
 }
 
-func RemoveTag(metaflacCommand string, tag string, flacFile string, verbose bool) {
+func RemoveTag(metaflacCommand string, tag string, flacFile string) error {
 	commandExec := exec.Command(metaflacCommand, "--remove-tag", tag, flacFile)
-	commandOutput, err := commandExec.CombinedOutput()
+	err := commandExec.Run()
 
-	if err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
-			resultCode := exitError.ExitCode()
-
-			if verbose {
-				fmt.Fprintf(os.Stderr, "command execution failed with result code %d - output:\n%s", resultCode, string(commandOutput))
-			}
-		} else {
-			if verbose {
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			}
-		}
-	}
+	return err
 }
 
 const FlacVersionFromFlacFileRegex = "reference libFLAC ([\\d]+.[\\d]+.[\\d]+) [\\d]+"
 
-func GetFlacVersionFromFlacFile(metaflacCommand string, flacFile string, verbose bool) string {
+func GetFlacVersionFromFlacFile(metaflacCommand string, flacFile string) (string, error) {
 	commandExec := exec.Command(metaflacCommand, "--show-vendor-tag", flacFile)
 	commandOutput, err := commandExec.CombinedOutput()
 
 	if err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
-			resultCode := exitError.ExitCode()
-
-			if verbose {
-				fmt.Fprintf(os.Stderr, "command execution failed with result code: %d - Output: %s", resultCode, string(commandOutput))
-			}
-		} else {
-			fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		}
+		return "", err
 	}
 
 	// Define the regular expression
@@ -153,8 +93,8 @@ func GetFlacVersionFromFlacFile(metaflacCommand string, flacFile string, verbose
 		// Extract the version from the second capturing group
 		flacVersion = matches[1]
 	} else {
-		fmt.Println("Unable to extract version.")
+		return "", errors.New("unable to extract version")
 	}
 
-	return flacVersion
+	return flacVersion, nil
 }

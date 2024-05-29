@@ -17,8 +17,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
-	"fmt"
+	"log"
 	"os"
+	"os/exec"
 	"panosse/utils"
 
 	"github.com/spf13/cobra"
@@ -34,7 +35,7 @@ var verifyCmd = &cobra.Command{
 	Use:     "verify <file>",
 	Version: rootCmd.Version,
 	Short:   "Verify FLAC files",
-	Long:    `Verify FLAC files.`,
+	Long:    "Verify FLAC files.",
 	Args:    cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		// Get command line arguments from Viper
@@ -45,11 +46,27 @@ var verifyCmd = &cobra.Command{
 		flacFile := args[0]
 
 		if !dryRun {
-			utils.Verify(flacCommand, verifyArguments, flacFile, verbose)
+			err := utils.Verify(flacCommand, verifyArguments, flacFile)
+
+			if err != nil {
+				if exitError, ok := err.(*exec.ExitError); ok {
+					resultCode := exitError.ExitCode()
+
+					if verbose {
+						log.Fatalf(
+							"error verifying file '%s' (exit code %d)",
+							flacFile,
+							resultCode,
+						)
+					}
+				}
+
+				os.Exit(1)
+			}
 		}
 
 		if verbose {
-			fmt.Fprintf(os.Stdout, "file '%s' verified\n", flacFile)
+			log.Printf("file '%s' verified\n", flacFile)
 		}
 	},
 }
@@ -59,10 +76,16 @@ func init() {
 
 	cobra.OnInitialize()
 
-	verifyCmd.PersistentFlags().StringSliceVarP(&verifyArguments, "verify-arguments", "a", []string{
-		"--test",
-		"--silent",
-	}, "verify arguments")
+	verifyCmd.PersistentFlags().StringSliceVarP(
+		&verifyArguments,
+		"verify-arguments",
+		"a",
+		[]string{
+			"--test",
+			"--silent",
+		},
+		"verify arguments",
+	)
 
 	viper.BindPFlags(verifyCmd.PersistentFlags())
 }
