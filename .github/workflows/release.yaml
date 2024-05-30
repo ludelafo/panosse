@@ -28,7 +28,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
-        extra_files: LICENSE README.md config.yaml
+        extra_files: COPYING README.md config.yaml
         binary_name: panosse
         md5sum: true
         sha256sum: true
