@@ -38,10 +38,20 @@ var (
 
 var encodeCmd = &cobra.Command{
 	Use:   "encode <file>",
-	Short: "Encode FLAC file",
-	Long:  "Encode FLAC file.",
-	Args:  cobra.ExactArgs(1),
+	Short: "Encode FLAC files",
+	Long: `Encode FLAC files.
+
+It calls flac to encode the FLAC files.`,
+	Example: `  # Encode a single FLAC file
+  $ panosse encode file.flac
+
+  # Encode all FLAC files in the current directory recursively and in parallel
+  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 -P$(nproc) panosse encode`,
+	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
+		// Set logger prefix for this file
+		log.SetPrefix("[panosse::encode] ")
+
 		// Get command line arguments from Viper
 		encodeArguments = viper.GetStringSlice("encode-arguments")
 		encodeIfEncodeArgumentTagsMismatch =
@@ -59,26 +69,24 @@ var encodeCmd = &cobra.Command{
 
 		// Command action
 		flacVersionFromFlacCommand, err := utils.GetFlacVersionFromFlacCommand(
-			flacCommand,
+			flacCommandPath,
 		)
 
 		if err != nil {
 			if exitError, ok := err.(*exec.ExitError); ok {
 				resultCode := exitError.ExitCode()
 
-				if verbose {
-					log.Fatalf(
-						"cannot get flac version from flac command (exit code %d)",
-						resultCode,
-					)
-				}
+				log.Fatalf(
+					"ERROR - cannot get flac version from flac command (exit code %d)",
+					resultCode,
+				)
 			}
 
 			os.Exit(1)
 		}
 
 		flacVersionFromFlacFile, err := utils.GetFlacVersionFromFlacFile(
-			metaflacCommand,
+			metaflacCommandPath,
 			flacFile,
 		)
 
@@ -86,20 +94,18 @@ var encodeCmd = &cobra.Command{
 			if exitError, ok := err.(*exec.ExitError); ok {
 				resultCode := exitError.ExitCode()
 
-				if verbose {
-					log.Fatalf(
-						"cannot get flac version from file '%s' (exit code %d)",
-						flacFile,
-						resultCode,
-					)
-				}
+				log.Fatalf(
+					"ERROR - cannot get flac version from file \"%s\" (exit code %d)",
+					flacFile,
+					resultCode,
+				)
 			}
 
 			os.Exit(1)
 		}
 
 		encodeArgumentsTagContent, _ := utils.GetTag(
-			metaflacCommand,
+			metaflacCommandPath,
 			saveEncodeArgumentsInTagName,
 			flacFile,
 		)
@@ -118,23 +124,23 @@ var encodeCmd = &cobra.Command{
 
 		if needToEncode {
 			if !dryRun {
-				utils.Encode(flacCommand, encodeArguments, flacFile)
+				utils.Encode(flacCommandPath, encodeArguments, flacFile)
 			}
 
 			if verbose {
-				log.Printf("file '%s' encoded\n", flacFile)
+				log.Printf("\"%s\" encoded\n", flacFile)
 			}
 		}
 
 		if saveEncodeArgumentsInTag {
 			if !dryRun {
 				utils.RemoveTag(
-					metaflacCommand,
+					metaflacCommandPath,
 					saveEncodeArgumentsInTagName,
 					flacFile,
 				)
 				utils.SetTag(
-					metaflacCommand,
+					metaflacCommandPath,
 					saveEncodeArgumentsInTagName,
 					encodeArgumentsAsString,
 					flacFile,
@@ -143,7 +149,7 @@ var encodeCmd = &cobra.Command{
 
 			if verbose {
 				log.Printf(
-					"file '%s' %s tag added\n",
+					"\"%s\" %s tag added\n",
 					flacFile,
 					saveEncodeArgumentsInTagName,
 				)
@@ -168,13 +174,13 @@ func init() {
 			"--warnings-as-errors",
 			"--silent",
 		},
-		"encode arguments",
+		"arguments passed to flac to encode the file",
 	)
 	encodeCmd.PersistentFlags().BoolVar(
 		&encodeIfEncodeArgumentTagsMismatch,
 		"encode-if-encode-argument-tags-mismatch",
 		true,
-		"encode if encode arguments mismatch",
+		"encode if encode argument tags mismatch (missing or different)",
 	)
 	encodeCmd.PersistentFlags().BoolVar(
 		&encodeIfFlacVersionsMismatch,

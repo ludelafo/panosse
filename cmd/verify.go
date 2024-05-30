@@ -32,12 +32,21 @@ var (
 )
 
 var verifyCmd = &cobra.Command{
-	Use:     "verify <file>",
-	Version: rootCmd.Version,
-	Short:   "Verify FLAC files",
-	Long:    "Verify FLAC files.",
-	Args:    cobra.ExactArgs(1),
+	Use:   "verify <file>",
+	Short: "Verify FLAC files",
+	Long: `Check the integrity of the FLAC files.
+
+It calls metaflac to verify the FLAC files.`,
+	Example: `  # Verify a single FLAC file
+  $ panosse verify file.flac
+
+  # Verify all FLAC files in the current directory recursively and in parallel
+  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 -P$(nproc) panosse verify`,
+	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
+		// Set logger prefix for this file
+		log.SetPrefix("[panosse::verify] ")
+
 		// Get command line arguments from Viper
 		verifyArguments = viper.GetStringSlice("verify-arguments")
 	},
@@ -46,19 +55,17 @@ var verifyCmd = &cobra.Command{
 		flacFile := args[0]
 
 		if !dryRun {
-			err := utils.Verify(flacCommand, verifyArguments, flacFile)
+			err := utils.Verify(flacCommandPath, verifyArguments, flacFile)
 
 			if err != nil {
 				if exitError, ok := err.(*exec.ExitError); ok {
 					resultCode := exitError.ExitCode()
 
-					if verbose {
-						log.Fatalf(
-							"error verifying file '%s' (exit code %d)",
-							flacFile,
-							resultCode,
-						)
-					}
+					log.Fatalf(
+						"ERROR - cannot verify file \"%s\" (exit code %d)",
+						flacFile,
+						resultCode,
+					)
 				}
 
 				os.Exit(1)
@@ -66,7 +73,7 @@ var verifyCmd = &cobra.Command{
 		}
 
 		if verbose {
-			log.Printf("file '%s' verified\n", flacFile)
+			log.Printf("\"%s\" verified\n", flacFile)
 		}
 	},
 }
@@ -84,7 +91,7 @@ func init() {
 			"--test",
 			"--silent",
 		},
-		"verify arguments",
+		"arguments passed to flac to verify the files",
 	)
 
 	viper.BindPFlags(verifyCmd.PersistentFlags())

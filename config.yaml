@@ -3,14 +3,14 @@
 # Perform a trial run with no changes made
 dry-run: false
 
-# flac command (check in $PATH as well)
-flac-command: "flac"
+# Path to the flac command (checks in $PATH as well)
+flac-command-path: "flac"
 
-# metaflac command (check in $PATH as well)
-metaflac-command: "metaflac"
+# Path to the metaflac command (checks in $PATH as well)
+metaflac-command-path: "metaflac"
 
 # Enable verbose output
-verbose: true
+verbose: false
 
 ## Clean
 
@@ -24,12 +24,6 @@ clean-arguments:
   - "--block-type=PICTURE"
   - "--block-type=SEEKTABLE"
 
-# Enable the fill of missing tags
-fill-missing-tags: true
-
-# Fill missing tags content
-fill-missing-tags-content: "No content for this tag"
-
 # Tags to keep in the file
 tags-to-keep:
   - "ALBUM"
@@ -37,9 +31,9 @@ tags-to-keep:
   - "ARTIST"
   - "COMMENT"
   - "DISCNUMBER"
-  - "ENCODER_SETTINGS"
+  - "FLAC_ARGUMENTS"
   - "GENRE"
-  - "REPLAYGAIN_SETTINGS"
+  - "METAFLAC_ARGUMENTS"
   - "REPLAYGAIN_REFERENCE_LOUDNESS"
   - "REPLAYGAIN_ALBUM_GAIN"
   - "REPLAYGAIN_ALBUM_PEAK"
@@ -53,7 +47,7 @@ tags-to-keep:
 
 ## Encode
 
-# encode arguments
+# Arguments passed to flac to encode the file
 encode-arguments:
   - "--compression-level-8"
   - "--delete-input-file"
@@ -63,29 +57,29 @@ encode-arguments:
   - "--warnings-as-errors"
   - "--silent"
 
-# encode if encode argument tags mismatch
+# Encode if encode argument tags mismatch (missing or different)
 encode-if-encode-argument-tags-mismatch: true
 
-# encode if flac versions mismatch between host's flac version and file's flac version
+# Encode if flac versions mismatch between host's flac version and file's flac version
 encode-if-flac-versions-mismatch: true
 
-# save encode arguments in tag
+# Save encode arguments in tag
 save-encode-arguments-in-tag: true
 
-# encode arguments tag name
+# Encode arguments tag name
 save-encode-arguments-in-tag-name: "FLAC_ARGUMENTS"
 
 ## Normalize
 
-# ReplayGain arguments
+# Arguments passed to flac to normalize the files
 normalize-arguments:
   - "--add-replay-gain"
 
-# normalize if normalize arguments tags mismatch
+# Normalize if normalize arguments tags mismatch (missing or different)
 normalize-if-normalize-argument-tags-mismatch: true
 
-# normalize if ReplayGain tags are missing
-normalize-if-replaygain-tags-are-missing: true
+# Normalize if any ReplayGain tags are missing
+normalize-if-any-replaygain-tags-are-missing: true
 
 # ReplayGain tags
 replaygain-tags:
@@ -95,15 +89,15 @@ replaygain-tags:
   - "REPLAYGAIN_ALBUM_GAIN"
   - "REPLAYGAIN_ALBUM_PEAK"
 
-# save normalize arguments in tag
+# Save normalize arguments in tag
 save-normalize-arguments-in-tag: true
 
-# normalize arguments tag name
+# Normalize arguments tag name
 save-normalize-arguments-in-tag-name: "METAFLAC_ARGUMENTS"
 
 ## Verify
 
-# verify arguments
+# Arguments passed to flac to verify the files
 verify-arguments:
   - "--test"
   - "--silent"

@@ -28,22 +28,28 @@ import (
 
 // Command arguments
 var (
-	cleanArguments         []string
-	fillMissingTags        bool
-	fillMissingTagsContent string
-	tagsToKeep             []string
+	cleanArguments []string
+	tagsToKeep     []string
 )
 
 var cleanCmd = &cobra.Command{
 	Use:   "clean <file>",
-	Short: "Clean FLAC files from tags and blocks",
-	Long:  `Clean FLAC files from tags and blocks.`,
-	Args:  cobra.ExactArgs(1),
+	Short: "Clean FLAC files from blocks and tags",
+	Long: `Clean FLAC files from blocks and tags.
+
+It calls metaflac to clean the FLAC files.`,
+	Example: `  # Clean a single FLAC file
+  $ panosse clean file.flac
+
+  # Clean all FLAC files in the current directory recursively and in parallel
+  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 -P$(nproc) panosse clean`,
+	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
+		// Set logger prefix for this file
+		log.SetPrefix("[panosse::clean] ")
+
 		// Get command line arguments from Viper
 		cleanArguments = viper.GetStringSlice("clean-arguments")
-		fillMissingTags = viper.GetBool("fill-missing-tags")
-		fillMissingTagsContent = viper.GetString("fill-missing-tags-content")
 		tagsToKeep = viper.GetStringSlice("tags-to-keep")
 	},
 	Run: func(cmd *cobra.Command, args []string) {
@@ -55,7 +61,7 @@ var cleanCmd = &cobra.Command{
 
 		for _, tagToKeep := range tagsToKeep {
 			tagContent, err := utils.GetTag(
-				metaflacCommand,
+				metaflacCommandPath,
 				tagToKeep,
 				flacFile,
 			)
@@ -64,33 +70,31 @@ var cleanCmd = &cobra.Command{
 				if exitError, ok := err.(*exec.ExitError); ok {
 					resultCode := exitError.ExitCode()
 
-					if verbose {
-						log.Fatalf(
-							"cannot get tag from file '%s' (exit code %d)",
-							flacFile,
-							resultCode,
-						)
-					}
+					log.Fatalf(
+						"ERROR - cannot get tag from file \"%s\" (exit code %d)",
+						flacFile,
+						resultCode,
+					)
 				}
 
 				os.Exit(1)
 			}
 
-			if tagContent == "" && fillMissingTags {
-				tagsToKeepMap[tagToKeep] = fillMissingTagsContent
-			} else {
+			if tagContent != "" {
 				tagsToKeepMap[tagToKeep] = tagContent
 			}
 		}
 
 		if !dryRun {
-			utils.RemoveAllTags(metaflacCommand, flacFile)
+			utils.RemoveAllTags(metaflacCommandPath, flacFile)
 		}
 
-		for tagToKeep, tagContent := range tagsToKeepMap {
-			if !dryRun {
+		for _, tagToKeep := range tagsToKeep {
+			tagContent, ok := tagsToKeepMap[tagToKeep]
+
+			if !dryRun && ok {
 				utils.SetTag(
-					metaflacCommand,
+					metaflacCommandPath,
 					tagToKeep,
 					tagContent,
 					flacFile,
@@ -99,19 +103,17 @@ var cleanCmd = &cobra.Command{
 		}
 
 		if !dryRun {
-			err := utils.Clean(metaflacCommand, cleanArguments, flacFile)
+			err := utils.Clean(metaflacCommandPath, cleanArguments, flacFile)
 
 			if err != nil {
 				if exitError, ok := err.(*exec.ExitError); ok {
 					resultCode := exitError.ExitCode()
 
-					if verbose {
-						log.Fatalf(
-							"error cleaning file '%s' (exit code %d)",
-							flacFile,
-							resultCode,
-						)
-					}
+					log.Fatalf(
+						"ERROR - cannot clean file \"%s\" (exit code %d)",
+						flacFile,
+						resultCode,
+					)
 				}
 
 				os.Exit(1)
@@ -119,7 +121,7 @@ var cleanCmd = &cobra.Command{
 		}
 
 		if verbose {
-			log.Printf("file '%s' cleaned\n", flacFile)
+			log.Printf("\"%s\" cleaned\n", flacFile)
 		}
 	},
 }
@@ -142,18 +144,6 @@ func init() {
 		},
 		"arguments passed to metaflac to clean the file",
 	)
-	cleanCmd.PersistentFlags().BoolVar(
-		&fillMissingTags,
-		"fill-missing-tags",
-		true,
-		"enable the fill of missing tags",
-	)
-	cleanCmd.PersistentFlags().StringVar(
-		&fillMissingTagsContent,
-		"fill-missing-tags-content",
-		"No content for this tag",
-		"fill missing tags content",
-	)
 	cleanCmd.PersistentFlags().StringSliceVarP(
 		&tagsToKeep,
 		"tags-to-keep",
@@ -164,9 +154,9 @@ func init() {
 			"ARTIST",
 			"COMMENT",
 			"DISCNUMBER",
-			"ENCODER_SETTINGS",
+			"FLAC_ARGUMENTS",
 			"GENRE",
-			"REPLAYGAIN_SETTINGS",
+			"METAFLAC_ARGUMENTS",
 			"REPLAYGAIN_REFERENCE_LOUDNESS",
 			"REPLAYGAIN_ALBUM_GAIN",
 			"REPLAYGAIN_ALBUM_PEAK",

@@ -28,11 +28,11 @@ import (
 
 // Command arguments
 var (
-	flacCommand     string
-	metaflacCommand string
-	configFile      string
-	dryRun          bool
-	verbose         bool
+	flacCommandPath     string
+	metaflacCommandPath string
+	configFile          string
+	dryRun              bool
+	verbose             bool
 )
 
 var rootCmd = &cobra.Command{
@@ -56,7 +56,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig, initViper, initLogger)
+	cobra.OnInitialize(initLogger, initConfig, initViper)
 
 	rootCmd.CompletionOptions.HiddenDefaultCmd = true
 
@@ -67,7 +67,7 @@ func init() {
 		"config-file",
 		"C",
 		"",
-		"config file to use (optional - will use \"./config.yaml\" or \"~/.panosse/config.yaml\" if available)",
+		"config file to use (optional - will use \"config.yaml\" or \"~/.panosse/config.yaml\" if available)",
 	)
 	rootCmd.PersistentFlags().BoolVarP(
 		&dryRun,
@@ -77,18 +77,18 @@ func init() {
 		"perform a trial run with no changes made",
 	)
 	rootCmd.PersistentFlags().StringVarP(
-		&flacCommand,
-		"flac-command",
+		&flacCommandPath,
+		"flac-command-path",
 		"F",
 		"flac",
-		"flac command (check in $PATH as well)",
+		"path to the flac command (checks in $PATH as well)",
 	)
 	rootCmd.PersistentFlags().StringVarP(
-		&metaflacCommand,
-		"metaflac-command",
+		&metaflacCommandPath,
+		"metaflac-command-path",
 		"M",
 		"metaflac",
-		"metaflac command (check in $PATH as well)",
+		"path to the metaflac command (checks in $PATH as well)",
 	)
 	rootCmd.PersistentFlags().BoolVarP(
 		&verbose,
@@ -99,6 +99,10 @@ func init() {
 	)
 
 	viper.BindPFlags(rootCmd.PersistentFlags())
+}
+
+func initLogger() {
+	log.SetFlags(0)
 }
 
 func initConfig() {
@@ -119,26 +123,13 @@ func initConfig() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
 	viper.AutomaticEnv()
 
-	err := viper.ReadInConfig()
-
-	if err == nil {
-		if verbose {
-			log.Printf(
-				"using config file: %v\n",
-				viper.ConfigFileUsed(),
-			)
-		}
-	}
+	viper.ReadInConfig()
 }
 
 func initViper() {
 	// Get command line arguments from Viper
 	dryRun = viper.GetBool("dry-run")
-	flacCommand = viper.GetString("flac-command")
-	metaflacCommand = viper.GetString("metaflac-command")
+	flacCommandPath = viper.GetString("flac-command-path")
+	metaflacCommandPath = viper.GetString("metaflac-command-path")
 	verbose = viper.GetBool("verbose")
-}
-
-func initLogger() {
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 }
