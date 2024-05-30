@@ -49,8 +49,8 @@ Other tools can be used to manage your music library, such as
 [MusicBrainz Picard](https://picard.musicbrainz.org/), or
 [foobar2000](https://www.foobar2000.org/).
 
-As already mentioned, panosse is only a wrapper around flac and metaflac. It does
-not provide much more functionality. It was developed to automate and set
+As already mentioned, panosse is only a wrapper around flac and metaflac. It
+does not provide much more functionality. It was developed to automate and set
 sane defaults for my music library maintenance.
 
 panosse tries to stay close to the UNIX philosophy of doing one thing and doing
@@ -121,7 +121,6 @@ Examples:
   $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 -P$(nproc) panosse verify
 
 Flags:
-  -h, --help                       help for verify
   -a, --verify-arguments strings   arguments passed to flac to verify the files (default [--test,--silent])
 ```
 
@@ -170,7 +169,7 @@ Examples:
   # This allows to consider the nested directories as one album for the normalization
   $ find . -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | while IFS= read -r -d '' dir; do
     mapfile -d '' -t flac_files < <(find "$dir" -type f -name "*.flac" -print0)
-  
+
     if [ ${#flac_files[@]} -ne 0 ]; then
       panosse normalize --verbose "${flac_files[@]}"
     fi
@@ -1121,7 +1120,7 @@ already encoded.
 find . -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | while IFS= read -r -d '' dir; do
   # For each directory, find all FLAC files and store them in an array
   mapfile -d '' -t flac_files < <(find "$dir" -type f -name "*.flac" -print0)
-  
+
   # Check if the array is not empty
   if [ ${#flac_files[@]} -ne 0 ]; then
     # Run the panosse normalize command with the found .flac files
@@ -1250,11 +1249,11 @@ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 ./panosse clean -
 
 Let's have a look at the files. Cleaner now!
 
-In this real world example, the files
-were not pre-processed using tools such as [beets](https://beets.io/) or
+In this real world example, the files were not pre-processed using tools such as
+[beets](https://beets.io/) or
 [MusicBrainz Picard](https://picard.musicbrainz.org/), thus missing some of the
-tags I would like to have. However, the files are now clean and ready for further
-processing.
+tags I would like to have. However, the files are now clean and ready for
+further processing.
 
 ```sh
 # List all available blocks

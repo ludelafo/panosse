@@ -20,7 +20,7 @@ jobs:
             goos: windows
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Release Go Binaries
       uses: wangyoucao577/go-release-action@v1
