@@ -17,8 +17,7 @@ It is merely a wrapper around
 [Cobra](https://github.com/spf13/cobra) and
 [Viper](https://github.com/spf13/viper) under the hood.
 
-```sh
-$ ./panosse
+```text
 Usage:
   panosse [command]
 
@@ -29,17 +28,6 @@ Available Commands:
   help        Help about any command
   normalize   Normalize FLAC files with ReplayGain
   verify      Verify FLAC files
-
-Flags:
-  -C, --config-file string             config file to use (optional - will use "./config.yaml" or "~/.panosse/config.yaml" if available)
-  -D, --dry-run                        perform a trial run with no changes made
-  -F, --flac-command-path string       path to the flac command (checks in $PATH as well) (default "flac")
-  -h, --help                           help for panosse
-  -M, --metaflac-command-path string   path to the metaflac command (checks in $PATH as well) (default "metaflac")
-  -V, --verbose                        enable verbose output
-  -v, --version                        version for panosse
-
-Use "panosse [command] --help" for more information about a command.
 ```
 
 For usage and configuration, see the [Usage](#usage) section and the
@@ -76,7 +64,20 @@ For usage and configuration, see the [Usage](#usage) section and the
 
 ## Usage
 
-```sh
+> [!TIP]
+>
+> The recommended order to execute panosse is:
+>
+> 1. [`verify`](#verify)
+> 2. [`encode`](#encode)
+> 3. [`normalize`](#normalize)
+> 4. [`clean`](#clean)
+>
+> This will ensure all the files are correct, encoded with the latest FLAC
+> version, normalized with ReplayGain, and cleaned from unnecessary blocks and
+> tags after all other operations.
+
+```text
 $ ./panosse --help
 Usage:
   panosse [command]
@@ -101,22 +102,9 @@ Flags:
 Use "panosse [command] --help" for more information about a command.
 ```
 
-> [!TIP]
->
-> The recommended order to execute panosse is:
->
-> 1. [`verify`](#verify)
-> 2. [`encode`](#encode)
-> 3. [`normalize`](#normalize)
-> 4. [`clean`](#clean)
->
-> This will ensure all the files are correct, encoded with the latest FLAC
-> version, normalized with ReplayGain, and cleaned from unnecessary blocks and
-> tags after all other operations.
-
 ### Verify
 
-```sh
+```text
 $ ./panosse verify --help
 Check the integrity of the FLAC files.
 
@@ -139,7 +127,7 @@ Flags:
 
 ### Encode
 
-```sh
+```text
 $ ./panosse encode --help
 Encode FLAC files.
 
@@ -165,7 +153,7 @@ Flags:
 
 ### Normalize
 
-```sh
+```text
 $ ./panosse normalize --help
 Normalize FLAC files with ReplayGain.
 
@@ -199,7 +187,7 @@ Flags:
 
 ### Clean
 
-```sh
+```text
 $ ./panosse clean --help
 Clean FLAC files from blocks and tags.
 
