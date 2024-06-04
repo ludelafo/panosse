@@ -27,10 +27,12 @@ import (
 )
 
 // Command arguments
-var (
-	cleanArguments []string
-	tagsToKeep     []string
-)
+type cleanCmdArgs struct {
+	CleanArguments []string `mapstructure:"clean-arguments"`
+	TagsToKeep     []string `mapstructure:"tags-to-keep"`
+}
+
+var CleanCmdArgs cleanCmdArgs
 
 var cleanCmd = &cobra.Command{
 	Use:   "clean <file>",
@@ -49,8 +51,7 @@ It calls metaflac to clean the FLAC files.`,
 		log.SetPrefix("[panosse::clean] ")
 
 		// Get command line arguments from Viper
-		cleanArguments = viper.GetStringSlice("clean-arguments")
-		tagsToKeep = viper.GetStringSlice("tags-to-keep")
+		viper.Unmarshal(&CleanCmdArgs)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get arguments for the command
@@ -59,9 +60,9 @@ It calls metaflac to clean the FLAC files.`,
 		// Command action
 		tagsToKeepMap := map[string]string{}
 
-		for _, tagToKeep := range tagsToKeep {
+		for _, tagToKeep := range CleanCmdArgs.TagsToKeep {
 			tagContent, err := utils.GetTag(
-				metaflacCommandPath,
+				RootCmdArgs.MetaflacCommandPath,
 				tagToKeep,
 				flacFile,
 			)
@@ -85,16 +86,16 @@ It calls metaflac to clean the FLAC files.`,
 			}
 		}
 
-		if !dryRun {
-			utils.RemoveAllTags(metaflacCommandPath, flacFile)
+		if !RootCmdArgs.DryRun {
+			utils.RemoveAllTags(RootCmdArgs.MetaflacCommandPath, flacFile)
 		}
 
-		for _, tagToKeep := range tagsToKeep {
+		for _, tagToKeep := range CleanCmdArgs.TagsToKeep {
 			tagContent, ok := tagsToKeepMap[tagToKeep]
 
-			if !dryRun && ok {
+			if !RootCmdArgs.DryRun && ok {
 				utils.SetTag(
-					metaflacCommandPath,
+					RootCmdArgs.MetaflacCommandPath,
 					tagToKeep,
 					tagContent,
 					flacFile,
@@ -102,8 +103,12 @@ It calls metaflac to clean the FLAC files.`,
 			}
 		}
 
-		if !dryRun {
-			err := utils.Clean(metaflacCommandPath, cleanArguments, flacFile)
+		if !RootCmdArgs.DryRun {
+			err := utils.Clean(
+				RootCmdArgs.MetaflacCommandPath,
+				CleanCmdArgs.CleanArguments,
+				flacFile,
+			)
 
 			if err != nil {
 				if exitError, ok := err.(*exec.ExitError); ok {
@@ -120,7 +125,7 @@ It calls metaflac to clean the FLAC files.`,
 			}
 		}
 
-		if verbose {
+		if RootCmdArgs.Verbose {
 			log.Printf("\"%s\" cleaned\n", flacFile)
 		}
 	},
@@ -130,7 +135,7 @@ func init() {
 	rootCmd.AddCommand(cleanCmd)
 
 	cleanCmd.PersistentFlags().StringSliceVarP(
-		&cleanArguments,
+		&CleanCmdArgs.CleanArguments,
 		"clean-arguments",
 		"a",
 		[]string{
@@ -145,7 +150,7 @@ func init() {
 		"arguments passed to metaflac to clean the file",
 	)
 	cleanCmd.PersistentFlags().StringSliceVarP(
-		&tagsToKeep,
+		&CleanCmdArgs.TagsToKeep,
 		"tags-to-keep",
 		"t",
 		[]string{

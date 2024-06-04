@@ -27,9 +27,11 @@ import (
 )
 
 // Command arguments
-var (
-	verifyArguments []string
-)
+type verifyCmdArgs struct {
+	VerifyArguments []string `mapstructure:"verify-arguments"`
+}
+
+var VerifyCmdArgs verifyCmdArgs
 
 var verifyCmd = &cobra.Command{
 	Use:   "verify <file>",
@@ -48,14 +50,18 @@ It calls metaflac to verify the FLAC files.`,
 		log.SetPrefix("[panosse::verify] ")
 
 		// Get command line arguments from Viper
-		verifyArguments = viper.GetStringSlice("verify-arguments")
+		viper.Unmarshal(&VerifyCmdArgs)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get arguments for the command
 		flacFile := args[0]
 
-		if !dryRun {
-			err := utils.Verify(flacCommandPath, verifyArguments, flacFile)
+		if !RootCmdArgs.DryRun {
+			err := utils.Verify(
+				RootCmdArgs.FlacCommandPath,
+				VerifyCmdArgs.VerifyArguments,
+				flacFile,
+			)
 
 			if err != nil {
 				if exitError, ok := err.(*exec.ExitError); ok {
@@ -72,7 +78,7 @@ It calls metaflac to verify the FLAC files.`,
 			}
 		}
 
-		if verbose {
+		if RootCmdArgs.Verbose {
 			log.Printf("\"%s\" verified\n", flacFile)
 		}
 	},
@@ -84,7 +90,7 @@ func init() {
 	cobra.OnInitialize()
 
 	verifyCmd.PersistentFlags().StringSliceVarP(
-		&verifyArguments,
+		&VerifyCmdArgs.VerifyArguments,
 		"verify-arguments",
 		"a",
 		[]string{
