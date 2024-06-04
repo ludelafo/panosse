@@ -27,7 +27,7 @@ import (
 )
 
 // Command arguments
-type rootCmdArgs struct {
+type RootCmdArgs struct {
 	FlacCommandPath     string `mapstructure:"flac-command-path"`
 	MetaflacCommandPath string `mapstructure:"metaflac-command-path"`
 	ConfigFile          string
@@ -35,7 +35,7 @@ type rootCmdArgs struct {
 	Verbose             bool `mapstructure:"verbose"`
 }
 
-var RootCmdArgs rootCmdArgs
+var rootCmdArgs RootCmdArgs
 
 var rootCmd = &cobra.Command{
 	Use:     "panosse",
@@ -65,35 +65,35 @@ func init() {
 	rootCmd.SetVersionTemplate("panosse v{{.Version}}\n")
 
 	rootCmd.PersistentFlags().StringVarP(
-		&RootCmdArgs.ConfigFile,
+		&rootCmdArgs.ConfigFile,
 		"config-file",
 		"C",
 		"",
 		"config file to use (optional - will use \"config.yaml\" or \"~/.panosse/config.yaml\" if available)",
 	)
 	rootCmd.PersistentFlags().BoolVarP(
-		&RootCmdArgs.DryRun,
+		&rootCmdArgs.DryRun,
 		"dry-run",
 		"D",
 		false,
 		"perform a trial run with no changes made",
 	)
 	rootCmd.PersistentFlags().StringVarP(
-		&RootCmdArgs.FlacCommandPath,
+		&rootCmdArgs.FlacCommandPath,
 		"flac-command-path",
 		"F",
 		"flac",
 		"path to the flac command (checks in $PATH as well)",
 	)
 	rootCmd.PersistentFlags().StringVarP(
-		&RootCmdArgs.MetaflacCommandPath,
+		&rootCmdArgs.MetaflacCommandPath,
 		"metaflac-command-path",
 		"M",
 		"metaflac",
 		"path to the metaflac command (checks in $PATH as well)",
 	)
 	rootCmd.PersistentFlags().BoolVarP(
-		&RootCmdArgs.Verbose,
+		&rootCmdArgs.Verbose,
 		"verbose",
 		"V",
 		false,
@@ -108,8 +108,8 @@ func initLogger() {
 }
 
 func initConfig() {
-	if RootCmdArgs.ConfigFile != "" {
-		viper.SetConfigFile(RootCmdArgs.ConfigFile)
+	if rootCmdArgs.ConfigFile != "" {
+		viper.SetConfigFile(rootCmdArgs.ConfigFile)
 	} else {
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
@@ -130,5 +130,5 @@ func initConfig() {
 
 func initViper() {
 	// Get command line arguments from Viper
-	viper.Unmarshal(&RootCmdArgs)
+	viper.Unmarshal(&rootCmdArgs)
 }

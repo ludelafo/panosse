@@ -28,7 +28,7 @@ import (
 )
 
 // Command arguments
-type normalizeCmdArgs struct {
+type NormalizeCmdArgs struct {
 	NormalizeArguments                       []string `mapstructure:"normalize-arguments"`
 	NormalizeIfNormalizeArgumentTagsMismatch bool     `mapstructure:"normalize-if-normalize-argument-tags-mismatch"`
 	NormalizeIfAnyReplayGainTagsAreMissing   bool     `mapstructure:"normalize-if-any-replaygain-tags-are-missing"`
@@ -37,7 +37,7 @@ type normalizeCmdArgs struct {
 	SaveNormalizeArgumentsInTagName          string   `mapstructure:"save-normalize-arguments-in-tag-name"`
 }
 
-var NormalizeCmdArgs normalizeCmdArgs
+var normalizeCmdArgs NormalizeCmdArgs
 
 var normalizeCmd = &cobra.Command{
 	Use:   "normalize <file 1> [<file 2>]...",
@@ -63,21 +63,21 @@ It calls metaflac to add the ReplayGain tags to the FLAC files.`,
 		log.SetPrefix("[panosse::normalize] ")
 
 		// Get command line arguments from Viper
-		viper.Unmarshal(&NormalizeCmdArgs)
+		viper.Unmarshal(&normalizeCmdArgs)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get arguments for the command
 		flacFiles := args
 
 		// Command action
-		normalizeArgumentsAsString := strings.Join(NormalizeCmdArgs.NormalizeArguments, " ")
+		normalizeArgumentsAsString := strings.Join(normalizeCmdArgs.NormalizeArguments, " ")
 
 		needToNormalize := false
 
 		for _, flacFile := range flacFiles {
 			normalizeArgumentsTagContent, err := utils.GetTag(
-				RootCmdArgs.MetaflacCommandPath,
-				NormalizeCmdArgs.SaveNormalizeArgumentsInTagName,
+				rootCmdArgs.MetaflacCommandPath,
+				normalizeCmdArgs.SaveNormalizeArgumentsInTagName,
 				flacFile,
 			)
 
@@ -95,14 +95,14 @@ It calls metaflac to add the ReplayGain tags to the FLAC files.`,
 				os.Exit(1)
 			}
 
-			if NormalizeCmdArgs.NormalizeIfNormalizeArgumentTagsMismatch && normalizeArgumentsTagContent == "" {
+			if normalizeCmdArgs.NormalizeIfNormalizeArgumentTagsMismatch && normalizeArgumentsTagContent == "" {
 				needToNormalize = true
 			}
 
-			if NormalizeCmdArgs.NormalizeIfAnyReplayGainTagsAreMissing {
-				for _, replaygainTag := range NormalizeCmdArgs.ReplaygainTags {
+			if normalizeCmdArgs.NormalizeIfAnyReplayGainTagsAreMissing {
+				for _, replaygainTag := range normalizeCmdArgs.ReplaygainTags {
 					replaygainTagContent, _ := utils.GetTag(
-						RootCmdArgs.MetaflacCommandPath,
+						rootCmdArgs.MetaflacCommandPath,
 						replaygainTag,
 						flacFile,
 					)
@@ -116,10 +116,10 @@ It calls metaflac to add the ReplayGain tags to the FLAC files.`,
 		}
 
 		if needToNormalize {
-			if !RootCmdArgs.DryRun {
+			if !rootCmdArgs.DryRun {
 				err := utils.Normalize(
-					RootCmdArgs.MetaflacCommandPath,
-					NormalizeCmdArgs.NormalizeArguments,
+					rootCmdArgs.MetaflacCommandPath,
+					normalizeCmdArgs.NormalizeArguments,
 					flacFiles,
 				)
 
@@ -139,21 +139,21 @@ It calls metaflac to add the ReplayGain tags to the FLAC files.`,
 			}
 		}
 
-		if RootCmdArgs.Verbose {
+		if rootCmdArgs.Verbose {
 			log.Printf("\"%s\" normalized\n", flacFiles)
 		}
 
 		for _, flacFile := range flacFiles {
-			if NormalizeCmdArgs.SaveNormalizeArgumentsInTag {
-				if !RootCmdArgs.DryRun {
+			if normalizeCmdArgs.SaveNormalizeArgumentsInTag {
+				if !rootCmdArgs.DryRun {
 					utils.RemoveTag(
-						RootCmdArgs.MetaflacCommandPath,
-						NormalizeCmdArgs.SaveNormalizeArgumentsInTagName,
+						rootCmdArgs.MetaflacCommandPath,
+						normalizeCmdArgs.SaveNormalizeArgumentsInTagName,
 						flacFile,
 					)
 					utils.SetTag(
-						RootCmdArgs.MetaflacCommandPath,
-						NormalizeCmdArgs.SaveNormalizeArgumentsInTagName,
+						rootCmdArgs.MetaflacCommandPath,
+						normalizeCmdArgs.SaveNormalizeArgumentsInTagName,
 						normalizeArgumentsAsString,
 						flacFile,
 					)
@@ -161,11 +161,11 @@ It calls metaflac to add the ReplayGain tags to the FLAC files.`,
 			}
 		}
 
-		if RootCmdArgs.Verbose {
+		if rootCmdArgs.Verbose {
 			log.Printf(
 				"\"%s\" %s tag added\n",
 				flacFiles,
-				NormalizeCmdArgs.SaveNormalizeArgumentsInTagName,
+				normalizeCmdArgs.SaveNormalizeArgumentsInTagName,
 			)
 		}
 	},
@@ -175,25 +175,25 @@ func init() {
 	rootCmd.AddCommand(normalizeCmd)
 
 	normalizeCmd.PersistentFlags().StringSliceVarP(
-		&NormalizeCmdArgs.NormalizeArguments,
+		&normalizeCmdArgs.NormalizeArguments,
 		"normalize-arguments", "a", []string{
 			"--add-replay-gain",
 		}, "arguments passed to flac to normalize the files",
 	)
 	normalizeCmd.PersistentFlags().BoolVar(
-		&NormalizeCmdArgs.NormalizeIfNormalizeArgumentTagsMismatch,
+		&normalizeCmdArgs.NormalizeIfNormalizeArgumentTagsMismatch,
 		"normalize-if-normalize-argument-tags-mismatch",
 		true,
 		"normalize if normalize arguments tags mismatch (missing or different)",
 	)
 	normalizeCmd.PersistentFlags().BoolVar(
-		&NormalizeCmdArgs.NormalizeIfAnyReplayGainTagsAreMissing,
+		&normalizeCmdArgs.NormalizeIfAnyReplayGainTagsAreMissing,
 		"normalize-if-any-replaygain-tags-are-missing",
 		true,
 		"normalize if any ReplayGain tags are missing",
 	)
 	normalizeCmd.PersistentFlags().StringSliceVarP(
-		&NormalizeCmdArgs.ReplaygainTags,
+		&normalizeCmdArgs.ReplaygainTags,
 		"replaygain-tags",
 		"t",
 		[]string{
@@ -206,13 +206,13 @@ func init() {
 		"ReplayGain tags",
 	)
 	normalizeCmd.PersistentFlags().BoolVar(
-		&NormalizeCmdArgs.SaveNormalizeArgumentsInTag,
+		&normalizeCmdArgs.SaveNormalizeArgumentsInTag,
 		"save-normalize-arguments-in-tag",
 		true,
 		"save normalize arguments in tag",
 	)
 	normalizeCmd.PersistentFlags().StringVar(
-		&NormalizeCmdArgs.SaveNormalizeArgumentsInTagName,
+		&normalizeCmdArgs.SaveNormalizeArgumentsInTagName,
 		"save-normalize-arguments-in-tag-name",
 		"METAFLAC_ARGUMENTS",
 		"normalize arguments tag name",
