@@ -28,13 +28,15 @@ import (
 )
 
 // Command arguments
-var (
-	encodeArguments                    []string
-	encodeIfEncodeArgumentTagsMismatch bool
-	encodeIfFlacVersionsMismatch       bool
-	saveEncodeArgumentsInTag           bool
-	saveEncodeArgumentsInTagName       string
-)
+type EncodeCmdArgs struct {
+	EncodeArguments                    []string `mapstructure:"encode-arguments"`
+	EncodeIfEncodeArgumentTagsMismatch bool     `mapstructure:"encode-if-encode-argument-tags-mismatch"`
+	EncodeIfFlacVersionsMismatch       bool     `mapstructure:"encode-if-flac-versions-mismatch"`
+	SaveEncodeArgumentsInTag           bool     `mapstructure:"save-encode-arguments-in-tag"`
+	SaveEncodeArgumentsInTagName       string   `mapstructure:"save-encode-arguments-in-tag-name"`
+}
+
+var encodeCmdArgs EncodeCmdArgs
 
 var encodeCmd = &cobra.Command{
 	Use:   "encode <file>",
@@ -53,15 +55,7 @@ It calls flac to encode the FLAC files.`,
 		log.SetPrefix("[panosse::encode] ")
 
 		// Get command line arguments from Viper
-		encodeArguments = viper.GetStringSlice("encode-arguments")
-		encodeIfEncodeArgumentTagsMismatch =
-			viper.GetBool("encode-if-encode-argument-tags-mismatch")
-		encodeIfFlacVersionsMismatch =
-			viper.GetBool("encode-if-flac-versions-mismatch")
-		saveEncodeArgumentsInTag =
-			viper.GetBool("save-encode-arguments-in-tag")
-		saveEncodeArgumentsInTagName =
-			viper.GetString("save-encode-arguments-in-tag-name")
+		viper.Unmarshal(&encodeCmdArgs)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get arguments for the command
@@ -69,7 +63,7 @@ It calls flac to encode the FLAC files.`,
 
 		// Command action
 		flacVersionFromFlacCommand, err := utils.GetFlacVersionFromFlacCommand(
-			flacCommandPath,
+			rootCmdArgs.FlacCommandPath,
 		)
 
 		if err != nil {
@@ -86,7 +80,7 @@ It calls flac to encode the FLAC files.`,
 		}
 
 		flacVersionFromFlacFile, err := utils.GetFlacVersionFromFlacFile(
-			metaflacCommandPath,
+			rootCmdArgs.MetaflacCommandPath,
 			flacFile,
 		)
 
@@ -105,53 +99,60 @@ It calls flac to encode the FLAC files.`,
 		}
 
 		encodeArgumentsTagContent, _ := utils.GetTag(
-			metaflacCommandPath,
-			saveEncodeArgumentsInTagName,
+			rootCmdArgs.MetaflacCommandPath,
+			encodeCmdArgs.SaveEncodeArgumentsInTagName,
 			flacFile,
 		)
 
-		encodeArgumentsAsString := strings.Join(encodeArguments, " ")
+		encodeArgumentsAsString := strings.Join(
+			encodeCmdArgs.EncodeArguments,
+			" ",
+		)
 
 		needToEncode := false
 
-		if encodeIfFlacVersionsMismatch && flacVersionFromFlacCommand != flacVersionFromFlacFile {
+		if encodeCmdArgs.EncodeIfFlacVersionsMismatch && flacVersionFromFlacCommand != flacVersionFromFlacFile {
 			needToEncode = true
 		}
 
-		if encodeIfEncodeArgumentTagsMismatch && encodeArgumentsTagContent != encodeArgumentsAsString {
+		if encodeCmdArgs.EncodeIfEncodeArgumentTagsMismatch && encodeArgumentsTagContent != encodeArgumentsAsString {
 			needToEncode = true
 		}
 
 		if needToEncode {
-			if !dryRun {
-				utils.Encode(flacCommandPath, encodeArguments, flacFile)
+			if !rootCmdArgs.DryRun {
+				utils.Encode(
+					rootCmdArgs.FlacCommandPath,
+					encodeCmdArgs.EncodeArguments,
+					flacFile,
+				)
 			}
 
-			if verbose {
+			if rootCmdArgs.Verbose {
 				log.Printf("\"%s\" encoded\n", flacFile)
 			}
 		}
 
-		if saveEncodeArgumentsInTag {
-			if !dryRun {
+		if encodeCmdArgs.SaveEncodeArgumentsInTag {
+			if !rootCmdArgs.DryRun {
 				utils.RemoveTag(
-					metaflacCommandPath,
-					saveEncodeArgumentsInTagName,
+					rootCmdArgs.MetaflacCommandPath,
+					encodeCmdArgs.SaveEncodeArgumentsInTagName,
 					flacFile,
 				)
 				utils.SetTag(
-					metaflacCommandPath,
-					saveEncodeArgumentsInTagName,
+					rootCmdArgs.MetaflacCommandPath,
+					encodeCmdArgs.SaveEncodeArgumentsInTagName,
 					encodeArgumentsAsString,
 					flacFile,
 				)
 			}
 
-			if verbose {
+			if rootCmdArgs.Verbose {
 				log.Printf(
 					"\"%s\" %s tag added\n",
 					flacFile,
-					saveEncodeArgumentsInTagName,
+					encodeCmdArgs.SaveEncodeArgumentsInTagName,
 				)
 			}
 		}
@@ -162,7 +163,7 @@ func init() {
 	rootCmd.AddCommand(encodeCmd)
 
 	encodeCmd.PersistentFlags().StringSliceVarP(
-		&encodeArguments,
+		&encodeCmdArgs.EncodeArguments,
 		"encode-arguments",
 		"a",
 		[]string{
@@ -177,25 +178,25 @@ func init() {
 		"arguments passed to flac to encode the file",
 	)
 	encodeCmd.PersistentFlags().BoolVar(
-		&encodeIfEncodeArgumentTagsMismatch,
+		&encodeCmdArgs.EncodeIfEncodeArgumentTagsMismatch,
 		"encode-if-encode-argument-tags-mismatch",
 		true,
 		"encode if encode argument tags mismatch (missing or different)",
 	)
 	encodeCmd.PersistentFlags().BoolVar(
-		&encodeIfFlacVersionsMismatch,
+		&encodeCmdArgs.EncodeIfFlacVersionsMismatch,
 		"encode-if-flac-versions-mismatch",
 		true,
 		"encode if flac versions mismatch between host's flac version and file's flac version",
 	)
 	encodeCmd.PersistentFlags().BoolVar(
-		&saveEncodeArgumentsInTag,
+		&encodeCmdArgs.SaveEncodeArgumentsInTag,
 		"save-encode-arguments-in-tag",
 		true,
 		"save encode arguments in tag",
 	)
 	encodeCmd.PersistentFlags().StringVar(
-		&saveEncodeArgumentsInTagName,
+		&encodeCmdArgs.SaveEncodeArgumentsInTagName,
 		"save-encode-arguments-in-tag-name",
 		"FLAC_ARGUMENTS",
 		"encode arguments tag name",

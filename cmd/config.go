@@ -24,78 +24,46 @@ import (
 )
 
 var configCmd = &cobra.Command{
-	Use:     "config",
-	Version: rootCmd.Version,
-	Short:   "Display panosse configuration",
-	Long:    "Display panosse configuration.",
+	Use:   "config",
+	Short: "Display panosse configuration",
+	Long:  "Display panosse configuration.",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		log.SetFlags(0)
 		log.SetPrefix("")
-
-		// Get command line arguments from Viper (clean)
-		cleanArguments = viper.GetStringSlice("clean-arguments")
-		tagsToKeep = viper.GetStringSlice("tags-to-keep")
-
-		// Get command line arguments from Viper (encode)
-		encodeArguments = viper.GetStringSlice("encode-arguments")
-		encodeIfEncodeArgumentTagsMismatch =
-			viper.GetBool("encode-if-encode-argument-tags-mismatch")
-		encodeIfFlacVersionsMismatch =
-			viper.GetBool("encode-if-flac-versions-mismatch")
-		saveEncodeArgumentsInTag =
-			viper.GetBool("save-encode-arguments-in-tag")
-		saveEncodeArgumentsInTagName =
-			viper.GetString("save-encode-arguments-in-tag-name")
-
-		// Get command line arguments from Viper (normalize)
-		normalizeArguments = viper.GetStringSlice("normalize-arguments")
-		normalizeIfNormalizeArgumentTagsMismatch =
-			viper.GetBool("normalize-if-normalize-argument-tags-mismatch")
-		normalizeIfAnyReplayGainTagsAreMissing =
-			viper.GetBool("normalize-if-replaygain-tags-are-missing")
-		replaygainTags = viper.GetStringSlice("replaygain-tags")
-		saveNormalizeArgumentsInTag =
-			viper.GetBool("save-normalize-arguments-in-tag")
-		saveNormalizeArgumentsInTagName =
-			viper.GetString("save-normalize-arguments-in-tag-name")
-
-		// Get command line arguments from Viper (verify)
-		verifyArguments = viper.GetStringSlice("verify-arguments")
-
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("Common")
 		log.Printf("  config-file: %s\n", viper.ConfigFileUsed())
-		log.Printf("  dry-run: %t\n", dryRun)
-		log.Printf("  flac-command-path: %s\n", flacCommandPath)
-		log.Printf("  metaflac-command-path: %s\n", metaflacCommandPath)
-		log.Printf("  verbose: %t\n", verbose)
+		log.Printf("  dry-run: %t\n", rootCmdArgs.DryRun)
+		log.Printf("  flac-command-path: %s\n", rootCmdArgs.FlacCommandPath)
+		log.Printf("  metaflac-command-path: %s\n", rootCmdArgs.MetaflacCommandPath)
+		log.Printf("  verbose: %t\n", rootCmdArgs.Verbose)
 
 		log.Println()
 		log.Println("Clean")
-		log.Printf("  clean-arguments: %s\n", cleanArguments)
-		log.Printf("  tags-to-keep: %s\n", tagsToKeep)
+		log.Printf("  clean-arguments: %s\n", cleanCmdArgs.CleanArguments)
+		log.Printf("  tags-to-keep: %s\n", cleanCmdArgs.TagsToKeep)
 
 		log.Println()
 		log.Println("Encode")
-		log.Printf("  encode-arguments: %s\n", encodeArguments)
-		log.Printf("  encode-if-encode-argument-tags-mismatch: %t\n", encodeIfEncodeArgumentTagsMismatch)
-		log.Printf("  encode-if-flac-versions-mismatch: %t\n", encodeIfFlacVersionsMismatch)
-		log.Printf("  save-encode-arguments-in-tag: %t\n", saveEncodeArgumentsInTag)
-		log.Printf("  save-encode-arguments-in-tag-name: %s\n", saveEncodeArgumentsInTagName)
+		log.Printf("  encode-arguments: %s\n", encodeCmdArgs.EncodeArguments)
+		log.Printf("  encode-if-encode-argument-tags-mismatch: %t\n", encodeCmdArgs.EncodeIfEncodeArgumentTagsMismatch)
+		log.Printf("  encode-if-flac-versions-mismatch: %t\n", encodeCmdArgs.EncodeIfFlacVersionsMismatch)
+		log.Printf("  save-encode-arguments-in-tag: %t\n", encodeCmdArgs.SaveEncodeArgumentsInTag)
+		log.Printf("  save-encode-arguments-in-tag-name: %s\n", encodeCmdArgs.SaveEncodeArgumentsInTagName)
 
 		log.Println()
 		log.Println("Normalize")
-		log.Printf("  normalize-arguments: %s\n", normalizeArguments)
-		log.Printf("  normalize-if-normalize-argument-tags-mismatch: %t\n", normalizeIfNormalizeArgumentTagsMismatch)
-		log.Printf("  normalize-if-replaygain-tags-are-missing: %t\n", normalizeIfAnyReplayGainTagsAreMissing)
-		log.Printf("  replaygain-tags: %s\n", replaygainTags)
-		log.Printf("  save-normalize-arguments-in-tag: %t\n", saveEncodeArgumentsInTag)
-		log.Printf("  save-normalize-arguments-in-tag-name: %s\n", saveNormalizeArgumentsInTagName)
+		log.Printf("  normalize-arguments: %s\n", normalizeCmdArgs.NormalizeArguments)
+		log.Printf("  normalize-if-normalize-argument-tags-mismatch: %t\n", normalizeCmdArgs.NormalizeIfNormalizeArgumentTagsMismatch)
+		log.Printf("  normalize-if-replaygain-tags-are-missing: %t\n", normalizeCmdArgs.NormalizeIfAnyReplayGainTagsAreMissing)
+		log.Printf("  replaygain-tags: %s\n", normalizeCmdArgs.ReplaygainTags)
+		log.Printf("  save-normalize-arguments-in-tag: %t\n", normalizeCmdArgs.SaveNormalizeArgumentsInTag)
+		log.Printf("  save-normalize-arguments-in-tag-name: %s\n", normalizeCmdArgs.SaveNormalizeArgumentsInTagName)
 
 		log.Println()
 		log.Println("Verify")
-		log.Printf("  verify-arguments: %s\n", verifyArguments)
+		log.Printf("  verify-arguments: %s\n", verifyCmdArgs.VerifyArguments)
 
 	},
 }

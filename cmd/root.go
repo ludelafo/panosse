@@ -27,13 +27,15 @@ import (
 )
 
 // Command arguments
-var (
-	flacCommandPath     string
-	metaflacCommandPath string
-	configFile          string
-	dryRun              bool
-	verbose             bool
-)
+type RootCmdArgs struct {
+	FlacCommandPath     string `mapstructure:"flac-command-path"`
+	MetaflacCommandPath string `mapstructure:"metaflac-command-path"`
+	ConfigFile          string
+	DryRun              bool `mapstructure:"dry-run"`
+	Verbose             bool `mapstructure:"verbose"`
+}
+
+var rootCmdArgs RootCmdArgs
 
 var rootCmd = &cobra.Command{
 	Use:     "panosse",
@@ -63,35 +65,35 @@ func init() {
 	rootCmd.SetVersionTemplate("panosse v{{.Version}}\n")
 
 	rootCmd.PersistentFlags().StringVarP(
-		&configFile,
+		&rootCmdArgs.ConfigFile,
 		"config-file",
 		"C",
 		"",
 		"config file to use (optional - will use \"config.yaml\" or \"~/.panosse/config.yaml\" if available)",
 	)
 	rootCmd.PersistentFlags().BoolVarP(
-		&dryRun,
+		&rootCmdArgs.DryRun,
 		"dry-run",
 		"D",
 		false,
 		"perform a trial run with no changes made",
 	)
 	rootCmd.PersistentFlags().StringVarP(
-		&flacCommandPath,
+		&rootCmdArgs.FlacCommandPath,
 		"flac-command-path",
 		"F",
 		"flac",
 		"path to the flac command (checks in $PATH as well)",
 	)
 	rootCmd.PersistentFlags().StringVarP(
-		&metaflacCommandPath,
+		&rootCmdArgs.MetaflacCommandPath,
 		"metaflac-command-path",
 		"M",
 		"metaflac",
 		"path to the metaflac command (checks in $PATH as well)",
 	)
 	rootCmd.PersistentFlags().BoolVarP(
-		&verbose,
+		&rootCmdArgs.Verbose,
 		"verbose",
 		"V",
 		false,
@@ -106,8 +108,8 @@ func initLogger() {
 }
 
 func initConfig() {
-	if configFile != "" {
-		viper.SetConfigFile(configFile)
+	if rootCmdArgs.ConfigFile != "" {
+		viper.SetConfigFile(rootCmdArgs.ConfigFile)
 	} else {
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
@@ -128,8 +130,5 @@ func initConfig() {
 
 func initViper() {
 	// Get command line arguments from Viper
-	dryRun = viper.GetBool("dry-run")
-	flacCommandPath = viper.GetString("flac-command-path")
-	metaflacCommandPath = viper.GetString("metaflac-command-path")
-	verbose = viper.GetBool("verbose")
+	viper.Unmarshal(&rootCmdArgs)
 }
