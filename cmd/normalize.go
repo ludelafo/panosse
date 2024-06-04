@@ -45,10 +45,10 @@ var normalizeCmd = &cobra.Command{
 	Long: `Normalize FLAC files with ReplayGain.
 
 It calls metaflac to add the ReplayGain tags to the FLAC files.`,
-	Example: `  # Normalize some FLAC files
+	Example: `  ## Normalize some FLAC files
   $ panosse normalize file1.flac file2.flac
 
-  # Normalize all FLAC files in all directories in parallel for a depth of 1
+  ## Normalize all FLAC files in all directories in parallel for a depth of 1
   # This allows to consider the nested directories as one album for the normalization
   $ find . -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | while IFS= read -r -d '' dir; do
     mapfile -d '' -t flac_files < <(find "$dir" -type f -name "*.flac" -print0)
