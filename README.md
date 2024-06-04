@@ -64,6 +64,14 @@ For usage and configuration, see the [Usage](#usage) section and the
 
 ## Usage
 
+> [!IMPORTANT]
+>
+> flac and metaflac must be installed on your computer in order to use panosse. You can install
+> them using your package manager or download them from the
+> [Xiph website](https://xiph.org/flac/download.html).
+>
+> panosse was tested with flac version 1.4.2 and metaflac version 1.4.2.
+
 > [!TIP]
 >
 > The recommended order to execute panosse is:
@@ -114,10 +122,15 @@ Usage:
   panosse verify <file> [flags]
 
 Examples:
-  # Verify a single FLAC file
+  ## Verify a single FLAC file
   $ panosse verify file.flac
 
-  # Verify all FLAC files in the current directory recursively and in parallel
+  ## Verify all FLAC files in the current directory recursively and in parallel
+  $ find . -type f -name "*.flac" -print0 | xargs -0 -n1 -P$(nproc) panosse verify
+
+  ## Verify all FLAC files in the current directory recursively and in order
+  # This approach is slower than the previous one but it can be useful to process
+  # the files in a specific order (e.g., to follow the progression)
   $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 -P$(nproc) panosse verify
 
 Flags:
@@ -136,11 +149,16 @@ Usage:
   panosse encode <file> [flags]
 
 Examples:
-  # Encode a single FLAC file
+  ## Encode a single FLAC file
   $ panosse encode file.flac
 
-  # Encode all FLAC files in the current directory recursively and in parallel
-  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 -P$(nproc) panosse encode
+  ## Encode all FLAC files in the current directory recursively and in parallel
+  $ find . -type f -name "*.flac" -print0 | xargs -0 -n1 -P$(nproc) panosse encode
+
+  ## Encode all FLAC files in the current directory recursively and in order
+  # This approach is slower than the previous one but it can be useful to process
+  # the files in a specific order (e.g., to follow the progression)
+  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 panosse encode
 
 Flags:
   -a, --encode-arguments strings                   arguments passed to flac to encode the file (default [--compression-level-8,--delete-input-file,--no-padding,--force,--verify,--warnings-as-errors,--silent])
@@ -162,10 +180,10 @@ Usage:
   panosse normalize <file 1> [<file 2>]... [flags]
 
 Examples:
-  # Normalize some FLAC files
+  ## Normalize some FLAC files
   $ panosse normalize file1.flac file2.flac
 
-  # Normalize all FLAC files in all directories in parallel for a depth of 1
+  ## Normalize all FLAC files in all directories in parallel for a depth of 1
   # This allows to consider the nested directories as one album for the normalization
   $ find . -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | while IFS= read -r -d '' dir; do
     mapfile -d '' -t flac_files < <(find "$dir" -type f -name "*.flac" -print0)
@@ -196,11 +214,16 @@ Usage:
   panosse clean <file> [flags]
 
 Examples:
-  # Clean a single FLAC file
+  ## Clean a single FLAC file
   $ panosse clean file.flac
 
-  # Clean all FLAC files in the current directory recursively and in parallel
-  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 -P$(nproc) panosse clean
+  ## Clean all FLAC files in the current directory recursively and in parallel
+  $ find . -type f -name "*.flac" -print0 | xargs -0 -n1 -P$(nproc) panosse clean
+
+  ## Clean all FLAC files in the current directory recursively and in order
+  # This approach is slower than the previous one but it can be useful to process
+  # the files in a specific order (e.g., to follow the progression)
+  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 panosse clean
 
 Flags:
   -a, --clean-arguments strings   arguments passed to metaflac to clean the file (default [--remove,--dont-use-padding,--block-type=APPLICATION,--block-type=CUESHEET,--block-type=PADDING,--block-type=PICTURE,--block-type=SEEKTABLE])
@@ -258,7 +281,7 @@ If no configuration file is found, the default values are used from the
 #### Examples
 
 ```yaml
-# custon config.yaml, config.yaml in the current directory or ~/.panosse/config.yaml
+# custom config.yaml, config.yaml in the current directory or ~/.panosse/config.yaml
 dry-run: true
 ```
 

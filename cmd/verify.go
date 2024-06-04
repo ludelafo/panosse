@@ -39,10 +39,15 @@ var verifyCmd = &cobra.Command{
 	Long: `Check the integrity of the FLAC files.
 
 It calls metaflac to verify the FLAC files.`,
-	Example: `  # Verify a single FLAC file
+	Example: `  ## Verify a single FLAC file
   $ panosse verify file.flac
 
-  # Verify all FLAC files in the current directory recursively and in parallel
+  ## Verify all FLAC files in the current directory recursively and in parallel
+  $ find . -type f -name "*.flac" -print0 | xargs -0 -n1 -P$(nproc) panosse verify
+
+  ## Verify all FLAC files in the current directory recursively and in order
+  # This approach is slower than the previous one but it can be useful to process
+  # the files in a specific order (e.g., to follow the progression)
   $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 -P$(nproc) panosse verify`,
 	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
