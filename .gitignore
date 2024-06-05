@@ -1,12 +1,3 @@
-## panosse
-
-# Ignore executables
-panosse
-panosse.exe
-
-# Ignore FLAC files
-*.flac
-
 ## Linux
 
 # Temporary files
@@ -16,6 +7,15 @@ panosse.exe
 
 # Files created by macOS Finder
 .DS_Store
+
+## panosse
+
+# Ignore executables
+panosse
+panosse.exe
+
+# Ignore FLAC files
+*.flac
 
 ## Windows
 
