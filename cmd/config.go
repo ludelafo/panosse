@@ -20,6 +20,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var configCmd = &cobra.Command{
@@ -32,8 +33,8 @@ var configCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("Common")
-		if rootCmdArgs.ConfigFile != "" {
-			log.Printf("  config-file: %s\n", rootCmdArgs.ConfigFile)
+		if viper.ConfigFileUsed() != "" {
+			log.Printf("  config-file: %s\n", viper.ConfigFileUsed())
 		} else {
 			log.Println("  config-file: <not set>")
 		}
