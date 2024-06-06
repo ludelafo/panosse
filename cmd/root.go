@@ -113,6 +113,7 @@ func init() {
 
 func initLogger() {
 	log.SetFlags(0)
+	log.SetPrefix("[panosse] ")
 }
 
 func initConfig() {
@@ -133,19 +134,16 @@ func initConfig() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
 	viper.AutomaticEnv()
 
-	err := viper.ReadInConfig()
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			if rootCmdArgs.Verbose {
+				log.Printf("default configuration file(s) not found - using defaults from cli")
+			}
+		} else {
+			log.Fatalf("ERROR - cannot read configuration file: %s", err)
 
-	if rootCmdArgs.ConfigFile != "" && err != nil {
-		log.Fatalf(
-			"ERROR - configuration file \"%s\" not found or unreadable",
-			rootCmdArgs.ConfigFile,
-		)
-
-		os.Exit(1)
-	}
-
-	if rootCmdArgs.ConfigFile == "" {
-		rootCmdArgs.ConfigFile = viper.ConfigFileUsed()
+			os.Exit(1)
+		}
 	}
 }
 
