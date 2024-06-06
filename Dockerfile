@@ -37,8 +37,14 @@ RUN apk add --no-cache flac
 # Copy the binary from the build stage
 COPY --from=build /bin/panosse /bin/
 
+# Copy the default configuration file
+COPY config.yaml /config/
+
+# Create a volume for the configuration file
+VOLUME [ "/config" ]
+
 # Default entrypoint
-ENTRYPOINT [ "panosse" ]
+ENTRYPOINT [ "panosse", "--config-file", "/config/config.yaml" ]
 
 # Default command passed to the entrypoint
 CMD [ "--help" ]

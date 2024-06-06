@@ -1,0 +1,73 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod tidy
+
+archives:
+  - format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - config.yaml
+      # - CHANGELOG.md
+      - COPYING
+      - README.md
+    name_template: >-
+      {{- .ProjectName }}-
+      {{- .Tag }}-
+      {{- .Os }}-
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+
+changelog:
+  use: github
+  format: "{{ .SHA }}: {{ .Message }} ({{ with .AuthorUsername }}@{{ . }}{{ else }}{{ .AuthorName }} <{{ .AuthorEmail }}>{{ end }})"
+  sort: asc
+
+checksum:
+  split: true
+
+dockers:
+  - image_templates:
+      - "ghcr.io/ludelafo/panosse:latest"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}.{{ .Patch }}"
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+    extra_files:
+      - cmd
+      - utils
+      - config.yaml
+      - go.mod
+      - go.sum
+      - main.go
+
+release:
+  name_template: "{{ .Tag }}"
+  header: |
+    ## panosse {{ .Tag }} ({{ .Date }})
+
+    Welcome to this new release!
+  footer: |
+    ### Changelog
+  mode: replace
+  discussion_category_name: Announcements
