@@ -44,7 +44,7 @@ var normalizeCmd = &cobra.Command{
 	Short: "Normalize FLAC files with ReplayGain",
 	Long: `Normalize FLAC files with ReplayGain.
 
-It calls metaflac to add the ReplayGain tags to the FLAC files.`,
+It calls metaflac to calculate and add the ReplayGain tags to the FLAC files.`,
 	Example: `  ## Normalize some FLAC files
   $ panosse normalize file1.flac file2.flac
 

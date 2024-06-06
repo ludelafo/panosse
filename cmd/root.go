@@ -125,7 +125,14 @@ func initConfig() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
 	viper.AutomaticEnv()
 
-	viper.ReadInConfig()
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf(
+			"ERROR - configuration file \"%s\" not found or unreadable",
+			rootCmdArgs.ConfigFile,
+		)
+
+		os.Exit(1)
+	}
 }
 
 func initViper() {

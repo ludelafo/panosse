@@ -66,11 +66,19 @@ For usage and configuration, see the [Usage](#usage) section and the
 
 > [!IMPORTANT]
 >
-> flac and metaflac must be installed on your computer in order to use panosse. You can install
-> them using your package manager or download them from the
+> flac and metaflac must be installed on your computer in order to use panosse.
+> You can install them using your package manager or download them from the
 > [Xiph website](https://xiph.org/flac/download.html).
 >
 > panosse was tested with flac version 1.4.2 and metaflac version 1.4.2.
+
+panosse can be used as a standalone binary or as a Docker image.
+
+To download the latest release of the binary files, visit the GitHub Releases
+page: <https://github.com/ludelafo/panosse/releases>.
+
+The official Docker images are available on GitHub Container Registry:
+<ghcr.io/ludelafo/panosse>.
 
 > [!TIP]
 >
@@ -305,6 +313,45 @@ Once panosse is built, you can run it with the following command:
 ```sh
 # Run panosse
 ./panosse
+```
+
+### Build panosse Docker image
+
+> [!NOTE]
+>
+> The following commands use the
+> [Docker BuildKit](https://docs.docker.com/build/buildkit/) feature to build
+> multi-platform images. Please refer to the Docker documentation for more
+> information: <https://docs.docker.com/build/building/multi-platform>.
+
+> [!TIP]
+>
+> Official Docker images for many platforms are available on GitHub Container
+> Registry: <ghcr.io/ludelafo/panosse>.
+>
+> You don't need to build the Docker image if you want to use the official one.
+
+To build panosse Docker image for your current platform:
+
+```sh
+# Build panosse Docker image
+docker build --tag ghcr.io/ludelafo/panosse .
+```
+
+### Run panosse Docker image
+
+To run panosse Docker image:
+
+```sh
+# Run panosse Docker image
+docker run --rm ghcr.io/ludelafo/panosse
+```
+
+You'll probably need to map a volume to access the files on your host machine:
+
+```sh
+# Run panosse Docker image with a volume
+docker run --rm --volume "$(pwd):/files" ghcr.io/ludelafo/panosse --config-file=/files/config.yaml verify /files/file.flac
 ```
 
 ## What does panosse mean?
