@@ -13,17 +13,13 @@ archives:
         format: zip
     files:
       - config.yaml
-      # - CHANGELOG.md
       - COPYING
       - README.md
     name_template: >-
       {{- .ProjectName }}-
       {{- .Tag }}-
       {{- .Os }}-
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end }}
+      {{- .Arch }}{{- if .Arm }}v{{ .Arm }}{{ end }}
 
 builds:
   - env:
@@ -32,27 +28,97 @@ builds:
       - linux
       - windows
       - darwin
-
+    goarch:
+      - "386"
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - "7"
+    
 changelog:
   use: github
   format: "{{ .SHA }}: {{ .Message }} ({{ with .AuthorUsername }}@{{ . }}{{ else }}{{ .AuthorName }} <{{ .AuthorEmail }}>{{ end }})"
-  sort: asc
+  # Empty means 'no sorting', it'll use the output of `git log` as is
+  sort: ""
 
 checksum:
   split: true
 
 dockers:
   - image_templates:
-      - "ghcr.io/ludelafo/panosse:latest"
-      - "ghcr.io/ludelafo/panosse:v{{ .Major }}"
-      - "ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}"
-      - "ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}.{{ .Patch }}"
+      - "ghcr.io/ludelafo/panosse:latest-386"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}-386"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}-386"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}.{{ .Patch }}-386"
+    use: buildx
     build_flag_templates:
-      - "--pull"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
+    - "--pull"
+    - "--label=org.opencontainers.image.created={{.Date}}"
+    - "--label=org.opencontainers.image.title={{.ProjectName}}"
+    - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+    - "--label=org.opencontainers.image.version={{.Version}}"
+    - "--platform=linux/386"
+    extra_files:
+      - cmd
+      - utils
+      - config.yaml
+      - go.mod
+      - go.sum
+      - main.go
+  - image_templates:
+      - "ghcr.io/ludelafo/panosse:latest-amd64"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}-amd64"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}-amd64"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}.{{ .Patch }}-amd64"
+    use: buildx
+    build_flag_templates:
+    - "--pull"
+    - "--label=org.opencontainers.image.created={{.Date}}"
+    - "--label=org.opencontainers.image.title={{.ProjectName}}"
+    - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+    - "--label=org.opencontainers.image.version={{.Version}}"
+    - "--platform=linux/amd64"
+    extra_files:
+      - cmd
+      - utils
+      - config.yaml
+      - go.mod
+      - go.sum
+      - main.go
+  - image_templates:
+      - "ghcr.io/ludelafo/panosse:latest-armv7"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}-armv7"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}-armv7"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}.{{ .Patch }}-armv7"
+    use: buildx
+    build_flag_templates:
+    - "--pull"
+    - "--label=org.opencontainers.image.created={{.Date}}"
+    - "--label=org.opencontainers.image.title={{.ProjectName}}"
+    - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+    - "--label=org.opencontainers.image.version={{.Version}}"
+    - "--platform=linux/arm/v7"
+    extra_files:
+      - cmd
+      - utils
+      - config.yaml
+      - go.mod
+      - go.sum
+      - main.go
+  - image_templates:
+      - "ghcr.io/ludelafo/panosse:latest-arm64"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}-arm64"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}-arm64"
+      - "ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}.{{ .Patch }}-arm64"
+    use: buildx
+    build_flag_templates:
+    - "--pull"
+    - "--label=org.opencontainers.image.created={{.Date}}"
+    - "--label=org.opencontainers.image.title={{.ProjectName}}"
+    - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+    - "--label=org.opencontainers.image.version={{.Version}}"
+    - "--platform=linux/arm64"
     extra_files:
       - cmd
       - utils
@@ -61,13 +127,45 @@ dockers:
       - go.sum
       - main.go
 
+docker_manifests:
+- name_template: 'ghcr.io/ludelafo/panosse:latest'
+  image_templates:
+  - 'ghcr.io/ludelafo/panosse:latest-386'
+  - 'ghcr.io/ludelafo/panosse:latest-amd64'
+  - 'ghcr.io/ludelafo/panosse:latest-armv7'
+  - 'ghcr.io/ludelafo/panosse:latest-arm64'
+- name_template: 'ghcr.io/ludelafo/panosse:v{{ .Major }}'
+  image_templates:
+  - 'ghcr.io/ludelafo/panosse:v{{ .Major }}-386'
+  - 'ghcr.io/ludelafo/panosse:v{{ .Major }}-amd64'
+  - 'ghcr.io/ludelafo/panosse:v{{ .Major }}-armv7'
+  - 'ghcr.io/ludelafo/panosse:v{{ .Major }}-arm64'
+- name_template: 'ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}'
+  image_templates:
+  - 'ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}-386'
+  - 'ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}-amd64'
+  - 'ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}-armv7'
+  - 'ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}-arm64'
+- name_template: 'ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}.{{ .Patch }}'
+  image_templates:
+  - 'ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}.{{ .Patch }}-386'
+  - 'ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}.{{ .Patch }}-amd64'
+  - 'ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}.{{ .Patch }}-armv7'
+  - 'ghcr.io/ludelafo/panosse:v{{ .Major }}.{{ .Minor }}.{{ .Patch }}-arm64'
+
 release:
   name_template: "{{ .Tag }}"
   header: |
-    ## panosse {{ .Tag }} ({{ .Date }})
+    Release {{ .Tag }} for panosse!
 
-    Welcome to this new release!
+    For usage, configuration and examples, please refer to the project's [README](https://github.com/ludelafo/panosse).
   footer: |
-    ### Changelog
+    ## Issues
+
+    If you find any issue, please report it in the project's [Issues](https://github.com/ludelafo/panosse/issues).
+
+    ## Discussions
+
+    For any question, suggestion or discussion, please refer to the project's [Discussions](https://github.com/ludelafo/panosse/discussions).
   mode: replace
-  discussion_category_name: Announcements
+  discussion_category_name: General
