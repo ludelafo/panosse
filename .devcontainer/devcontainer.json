@@ -1,6 +1,9 @@
 {
 	"name": "panosse Dev Container",
 	"image": "mcr.microsoft.com/devcontainers/go:1",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
+	},
 	"mounts": [
 		// Map the user's SSH directory to the container for SSH signing
 		"type=bind,source=${localEnv:HOME}/.ssh,target=${localEnv:HOME}/.ssh,type=bind,consistency=cached"

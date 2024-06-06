@@ -20,7 +20,6 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var configCmd = &cobra.Command{
@@ -33,7 +32,11 @@ var configCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("Common")
-		log.Printf("  config-file: %s\n", viper.ConfigFileUsed())
+		if rootCmdArgs.ConfigFile != "" {
+			log.Printf("  config-file: %s\n", rootCmdArgs.ConfigFile)
+		} else {
+			log.Println("  config-file: <not set>")
+		}
 		log.Printf("  dry-run: %t\n", rootCmdArgs.DryRun)
 		log.Printf("  flac-command-path: %s\n", rootCmdArgs.FlacCommandPath)
 		log.Printf("  metaflac-command-path: %s\n", rootCmdArgs.MetaflacCommandPath)
