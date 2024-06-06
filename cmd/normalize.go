@@ -54,7 +54,7 @@ It calls metaflac to calculate and add the ReplayGain tags to the FLAC files.`,
     mapfile -d '' -t flac_files < <(find "$dir" -type f -name "*.flac" -print0)
   
     if [ ${#flac_files[@]} -ne 0 ]; then
-      panosse normalize --verbose "${flac_files[@]}"
+      panosse normalize "${flac_files[@]}"
     fi
   done`,
 	Args: cobra.MinimumNArgs(1),
@@ -115,7 +115,7 @@ It calls metaflac to calculate and add the ReplayGain tags to the FLAC files.`,
 			}
 		}
 
-		if needToNormalize {
+		if needToNormalize || rootCmdArgs.Force {
 			if !rootCmdArgs.DryRun {
 				err := utils.Normalize(
 					rootCmdArgs.MetaflacCommandPath,

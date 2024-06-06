@@ -33,6 +33,7 @@ type RootCmdArgs struct {
 	ConfigFile          string
 	DryRun              bool `mapstructure:"dry-run"`
 	Verbose             bool `mapstructure:"verbose"`
+	Force               bool `mapstructure:"force"`
 }
 
 var rootCmdArgs RootCmdArgs
@@ -99,6 +100,13 @@ func init() {
 		false,
 		"enable verbose output",
 	)
+	rootCmd.PersistentFlags().BoolVarP(
+		&rootCmdArgs.Force,
+		"force",
+		"X",
+		false,
+		"force processing even if no processing is needed",
+	)
 
 	viper.BindPFlags(rootCmd.PersistentFlags())
 }
@@ -125,13 +133,19 @@ func initConfig() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
 	viper.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err != nil {
+	err := viper.ReadInConfig()
+
+	if rootCmdArgs.ConfigFile != "" && err != nil {
 		log.Fatalf(
 			"ERROR - configuration file \"%s\" not found or unreadable",
 			rootCmdArgs.ConfigFile,
 		)
 
 		os.Exit(1)
+	}
+
+	if rootCmdArgs.ConfigFile == "" {
+		rootCmdArgs.ConfigFile = viper.ConfigFileUsed()
 	}
 }
 
