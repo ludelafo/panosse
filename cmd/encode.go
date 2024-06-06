@@ -124,7 +124,7 @@ It calls flac to encode the FLAC files.`,
 			needToEncode = true
 		}
 
-		if needToEncode {
+		if needToEncode || rootCmdArgs.Force {
 			if !rootCmdArgs.DryRun {
 				utils.Encode(
 					rootCmdArgs.FlacCommandPath,

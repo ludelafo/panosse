@@ -12,6 +12,9 @@ metaflac-command-path: "metaflac"
 # Enable verbose output
 verbose: false
 
+# Force processing even if no processing is needed
+force: false
+
 ## Clean
 
 # Arguments passed to metaflac to clean the file

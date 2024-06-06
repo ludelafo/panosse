@@ -41,6 +41,7 @@ var configCmd = &cobra.Command{
 		log.Printf("  flac-command-path: %s\n", rootCmdArgs.FlacCommandPath)
 		log.Printf("  metaflac-command-path: %s\n", rootCmdArgs.MetaflacCommandPath)
 		log.Printf("  verbose: %t\n", rootCmdArgs.Verbose)
+		log.Printf("  force: %t\n", rootCmdArgs.Force)
 
 		log.Println()
 		log.Println("Clean")

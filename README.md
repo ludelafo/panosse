@@ -78,7 +78,7 @@ To download the latest release of the binary files, visit the GitHub Releases
 page: <https://github.com/ludelafo/panosse/releases>.
 
 The official Docker images are available on GitHub Container Registry:
-<ghcr.io/ludelafo/panosse>.
+<https://ghcr.io/ludelafo/panosse>.
 
 > [!TIP]
 >
@@ -110,6 +110,7 @@ Flags:
   -C, --config-file string             config file to use (optional - will use "config.yaml" or "~/.panosse/config.yaml" if available)
   -D, --dry-run                        perform a trial run with no changes made
   -F, --flac-command-path string       path to the flac command (checks in $PATH as well) (default "flac")
+  -X, --force                          force processing even if no processing is needed
   -h, --help                           help for panosse
   -M, --metaflac-command-path string   path to the metaflac command (checks in $PATH as well) (default "metaflac")
   -V, --verbose                        enable verbose output
@@ -197,7 +198,7 @@ Examples:
     mapfile -d '' -t flac_files < <(find "$dir" -type f -name "*.flac" -print0)
 
     if [ ${#flac_files[@]} -ne 0 ]; then
-      panosse normalize --verbose "${flac_files[@]}"
+      panosse normalize "${flac_files[@]}"
     fi
   done
 
@@ -317,19 +318,10 @@ Once panosse is built, you can run it with the following command:
 
 ### Build panosse Docker image
 
-> [!NOTE]
->
-> The following commands use the
-> [Docker BuildKit](https://docs.docker.com/build/buildkit/) feature to build
-> multi-platform images. Please refer to the Docker documentation for more
-> information: <https://docs.docker.com/build/building/multi-platform>.
-
 > [!TIP]
 >
-> Official Docker images for many platforms are available on GitHub Container
-> Registry: <ghcr.io/ludelafo/panosse>.
->
-> You don't need to build the Docker image if you want to use the official one.
+> Official Docker images for many platforms are already available on GitHub Container
+> Registry: <https://ghcr.io/ludelafo/panosse>.
 
 To build panosse Docker image for your current platform:
 
