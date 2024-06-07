@@ -6,6 +6,11 @@ labels: New
 assignees: ""
 ---
 
+Before you submit your issue, please review the following elements. Check the boxes below to confirm that you have read and understood each item.
+
+- [ ] I have read and agreed to panosse's [Contributing](https://github.com/ludelafo/panosse/blob/main/CONTRIBUTING.md) guide.
+- [ ] I have checked that the issue does not already exist or has not already been resolved in another [issue](https://github.com/ludelafo/panosse/issues) or [pull request](https://github.com/ludelafo/panosse/pulls).
+
 ## Describe the bug
 
 A clear and concise description of what the bug is. Feel free to remove this section if irrelevant.

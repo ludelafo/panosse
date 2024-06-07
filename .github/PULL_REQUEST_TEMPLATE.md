@@ -1,8 +1,14 @@
-_Please do not create a pull request without creating an issue first._
-
-_Any change needs to be discussed before proceeding. Failure to do so may result in the rejection of the pull request._
-
 ## Purpose of the pull request
+
+<!--
+Please do not create a pull request without creating an issue first.
+
+Reuse the exact same title as the issue.
+
+Any change needs to be discussed before proceeding.
+
+Failure to follow these guidelines may result in the rejection of the pull request.
+-->
 
 Explain the purpose for making this pull request. What existing problem does the
 pull request solve?
