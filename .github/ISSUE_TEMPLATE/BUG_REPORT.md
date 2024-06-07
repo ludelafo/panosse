@@ -1,23 +1,22 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report for a bug to help us improve
 title: "[BUG]"
-labels: ''
-assignees: ''
-
+labels: New
+assignees: ""
 ---
 
 ## Describe the bug
 
 A clear and concise description of what the bug is.
 
-## To Reproduce
+## To reproduce
 
 Steps to reproduce the behavior:
 
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
+1. Files are located in '...'
+2. Files are structured like '...'
+3. Run panosse with '...'
 4. See error
 
 ## Expected behavior
@@ -31,9 +30,9 @@ If applicable, add outputs to help explain your problem.
 Environment (please complete the following information):
 
 - OS: [e.g. Linux, macOS, Windows, Docker]
-- panosse version:  [e.g. v0.1.1]
-- flac version:  [e.g. 1.4.2]
-- metaflac version:  [e.g. 1.4.2]
+- panosse version: [e.g. v0.1.1]
+- flac version: [e.g. 1.4.2]
+- metaflac version: [e.g. 1.4.2]
 
 ## Additional context
 
