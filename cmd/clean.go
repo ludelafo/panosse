@@ -44,12 +44,12 @@ It calls metaflac to clean the FLAC files.`,
   $ panosse clean file.flac
 
   ## Clean all FLAC files in the current directory recursively and in parallel
-  $ find . -type f -name "*.flac" -print0 | xargs -0 -n1 -P$(nproc) panosse clean
+  $ find . -type f -name "*.flac" -print0 | xargs -0 -n 1 -P $(nproc) panosse clean
 
   ## Clean all FLAC files in the current directory recursively and in order
   # This approach is slower than the previous one but it can be useful to process
   # the files in a specific order (e.g., to follow the progression)
-  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 panosse clean`,
+  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n 1 panosse clean`,
 	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		// Set logger prefix for this file
