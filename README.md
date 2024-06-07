@@ -1491,4 +1491,4 @@ METADATA block #1
 ## License
 
 panosse is licensed under the
-[GNU Affero General Public License (GNU AGPL-3.0)](./COPYING).
+[GNU Affero General Public License (GNU AGPL-3.0)](./COPYING.md).
