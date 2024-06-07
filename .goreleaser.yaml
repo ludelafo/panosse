@@ -41,6 +41,15 @@ changelog:
   format: "{{ .SHA }}: {{ .Message }} ({{ with .AuthorUsername }}@{{ . }}{{ else }}{{ .AuthorName }} <{{ .AuthorEmail }}>{{ end }})"
   # Empty means 'no sorting', it'll use the output of `git log` as is
   sort: ""
+  groups:
+    - title: Features
+      regexp: '^\[FEATURE\] .+$'
+      order: 0
+    - title: "Bug fixes"
+      regexp: '^\[BUG\] .+$'
+      order: 1
+    - title: Others
+      order: 999
 
 checksum:
   split: true
@@ -156,14 +165,16 @@ docker_manifests:
 release:
   name_template: "{{ .Tag }}"
   header: |
-    For usage, configuration and examples, please refer to the project's [README](https://github.com/ludelafo/panosse).
+    For usage, configuration and examples, please refer to the project's README at <https://github.com/ludelafo/panosse>.
+
+    Docker images are published on the project's GitHub Container Registry at <https://ghcr.io/ludelafo/panosse>.
   footer: |
     ## Issues
 
-    If you find any issue, please report it in the project's [Issues](https://github.com/ludelafo/panosse/issues).
+    If you find any issue, please report it in the project's Issues at <https://github.com/ludelafo/panosse/issues>.
 
     ## Discussions
 
-    For any question, suggestion or discussion, please refer to the project's [Discussions](https://github.com/ludelafo/panosse/discussions).
+    For any question, suggestion or discussion, please refer to the project's Discussions at <https://github.com/ludelafo/panosse/discussions>.
   mode: replace
   discussion_category_name: General
