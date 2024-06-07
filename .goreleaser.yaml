@@ -13,7 +13,7 @@ archives:
         format: zip
     files:
       - config.yaml
-      - COPYING
+      - COPYING.md
       - README.md
     name_template: >-
       {{- .ProjectName }}-
