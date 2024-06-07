@@ -87,8 +87,8 @@ and run it as a container: <https://ghcr.io/ludelafo/panosse>.
 
 > [!IMPORTANT]
 >
-> flac and metaflac is already installed in the Docker image. No need to install
-> them on your computer.
+> flac and metaflac are already installed in the Docker image. No need to
+> install them on your computer.
 
 ```sh
 # Run panosse as a Docker container
