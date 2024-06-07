@@ -66,17 +66,29 @@ For usage and configuration, see the [Usage](#usage) section and the
 
 panosse can be used as a standalone binary or with Docker.
 
-To use panosse of a standalone binary, download the latest release from the GitHub Releases page: <https://github.com/ludelafo/panosse/releases>.
+To use panosse of a standalone binary, download the latest release from the
+GitHub Releases page: <https://github.com/ludelafo/panosse/releases>.
+
+> [!IMPORTANT]
+>
+> flac and metaflac must be installed on your computer in order to use panosse.
+> You can install them using your package manager or download them from the
+> [Xiph website](https://xiph.org/flac/download.html).
+>
+> panosse was tested with flac version 1.4.2 and metaflac version 1.4.2.
 
 ```sh
 # Run panosse as a standalone binary
 ./panosse --help
 ```
 
-### Docker
+To use panosse with Docker, pull the Docker image from GitHub Container Registry
+and run it as a container: <https://ghcr.io/ludelafo/panosse>.
 
-To use panosse with Docker, pull the Docker image from GitHub Container Registry and run it as a container:
-<https://ghcr.io/ludelafo/panosse>.
+> [!IMPORTANT]
+>
+> flac and metaflac is already installed in the Docker image. No need to install
+> them on your computer.
 
 ```sh
 # Run panosse as a Docker container
@@ -88,14 +100,6 @@ docker run --rm \
   --volume "$(pwd):/flac-files" \
   ghcr.io/ludelafo/panosse --config-file /config/custom-config.yaml /files/file.flac
 ```
-
-> [!IMPORTANT]
->
-> flac and metaflac must be installed on your computer in order to use panosse.
-> You can install them using your package manager or download them from the
-> [Xiph website](https://xiph.org/flac/download.html).
->
-> panosse was tested with flac version 1.4.2 and metaflac version 1.4.2.
 
 ```text
 $ ./panosse --help
@@ -214,12 +218,12 @@ Examples:
   $ find . -mindepth 1 -maxdepth 1 -type d -print0 | xargs -0 -n 1 -P $(nproc) bash -c '
     dir="$1"
     flac_files=()
-  
+
     # Find all FLAC files in the current directory and store them in an array
     while IFS= read -r -d "" file; do
       flac_files+=("$file")
     done < <(find "$dir" -type f -name "*.flac" -print0)
-  
+
     # Check if there are any FLAC files found
     if [ ${#flac_files[@]} -ne 0 ]; then
       # Pass the .flac files to the panosse normalize command
@@ -233,12 +237,12 @@ Examples:
   $ find . -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | xargs -0 -n 1 bash -c '
     dir="$1"
     flac_files=()
-  
+
     # Find all FLAC files in the current directory and store them in an array
     while IFS= read -r -d "" file; do
       flac_files+=("$file")
     done < <(find "$dir" -type f -name "*.flac" -print0)
-  
+
     # Check if there are any FLAC files found
     if [ ${#flac_files[@]} -ne 0 ]; then
       # Pass the .flac files to the panosse normalize command
@@ -364,8 +368,8 @@ Once panosse is built, you can run it with the following command:
 
 > [!TIP]
 >
-> Official Docker images for many platforms are already available on GitHub Container
-> Registry: <https://ghcr.io/ludelafo/panosse>.
+> Official Docker images for many platforms are already available on GitHub
+> Container Registry: <https://ghcr.io/ludelafo/panosse>.
 
 To build panosse Docker image for your current platform:
 
