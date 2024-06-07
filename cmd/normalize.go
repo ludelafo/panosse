@@ -48,15 +48,42 @@ It calls metaflac to calculate and add the ReplayGain tags to the FLAC files.`,
 	Example: `  ## Normalize some FLAC files
   $ panosse normalize file1.flac file2.flac
 
-  ## Normalize all FLAC files in all directories in parallel for a depth of 1
+  ## Normalize all FLAC files in each sub-directory for a depth of 1 in parallel
   # This allows to consider the nested directories as one album for the normalization
-  $ find . -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | while IFS= read -r -d '' dir; do
-    mapfile -d '' -t flac_files < <(find "$dir" -type f -name "*.flac" -print0)
+  $ find . -mindepth 1 -maxdepth 1 -type d -print0 | xargs -0 -n 1 -P $(nproc) bash -c '
+    dir="$1"
+    flac_files=()
   
+    # Find all FLAC files in the current directory and store them in an array
+    while IFS= read -r -d "" file; do
+      flac_files+=("$file")
+    done < <(find "$dir" -type f -name "*.flac" -print0)
+  
+    # Check if there are any FLAC files found
     if [ ${#flac_files[@]} -ne 0 ]; then
+      # Pass the .flac files to the panosse normalize command
       panosse normalize "${flac_files[@]}"
     fi
-  done`,
+  ' {}
+
+  ## Normalize all FLAC files in each sub-directory for a depth of 1 in order
+  # This approach is slower than the previous one but it can be useful to process
+  # the files in a specific order (e.g., to follow the progression)
+  $ find . -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | xargs -0 -n 1 bash -c '
+    dir="$1"
+    flac_files=()
+  
+    # Find all FLAC files in the current directory and store them in an array
+    while IFS= read -r -d "" file; do
+      flac_files+=("$file")
+    done < <(find "$dir" -type f -name "*.flac" -print0)
+  
+    # Check if there are any FLAC files found
+    if [ ${#flac_files[@]} -ne 0 ]; then
+      # Pass the .flac files to the panosse normalize command
+      panosse normalize "${flac_files[@]}"
+    fi
+  ' {}`,
 	Args: cobra.MinimumNArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		// Set logger prefix for this file

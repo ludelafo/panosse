@@ -48,12 +48,12 @@ It calls flac to encode the FLAC files.`,
   $ panosse encode file.flac
 
   ## Encode all FLAC files in the current directory recursively and in parallel
-  $ find . -type f -name "*.flac" -print0 | xargs -0 -n1 -P$(nproc) panosse encode
+  $ find . -type f -name "*.flac" -print0 | xargs -0 -n 1 -P $(nproc) panosse encode
 
   ## Encode all FLAC files in the current directory recursively and in order
   # This approach is slower than the previous one but it can be useful to process
   # the files in a specific order (e.g., to follow the progression)
-  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 panosse encode`,
+  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n 1 panosse encode`,
 	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		// Set logger prefix for this file

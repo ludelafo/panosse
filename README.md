@@ -64,6 +64,31 @@ For usage and configuration, see the [Usage](#usage) section and the
 
 ## Usage
 
+panosse can be used as a standalone binary or with Docker.
+
+To use panosse of a standalone binary, download the latest release from the GitHub Releases page: <https://github.com/ludelafo/panosse/releases>.
+
+```sh
+# Run panosse as a standalone binary
+./panosse --help
+```
+
+### Docker
+
+To use panosse with Docker, pull the Docker image from GitHub Container Registry and run it as a container:
+<https://ghcr.io/ludelafo/panosse>.
+
+```sh
+# Run panosse as a Docker container
+docker run --rm ghcr.io/ludelafo/panosse --help
+
+# Run panosse as a Docker container with a volume
+docker run --rm \
+  --volume "$(pwd)/custom-config.yaml:/config/custom-config.yaml" \
+  --volume "$(pwd):/flac-files" \
+  ghcr.io/ludelafo/panosse --config-file /config/custom-config.yaml /files/file.flac
+```
+
 > [!IMPORTANT]
 >
 > flac and metaflac must be installed on your computer in order to use panosse.
@@ -71,27 +96,6 @@ For usage and configuration, see the [Usage](#usage) section and the
 > [Xiph website](https://xiph.org/flac/download.html).
 >
 > panosse was tested with flac version 1.4.2 and metaflac version 1.4.2.
-
-panosse can be used as a standalone binary or as a Docker image.
-
-To download the latest release of the binary files, visit the GitHub Releases
-page: <https://github.com/ludelafo/panosse/releases>.
-
-The official Docker images are available on GitHub Container Registry:
-<https://ghcr.io/ludelafo/panosse>.
-
-> [!TIP]
->
-> The recommended order to execute panosse is:
->
-> 1. [`verify`](#verify)
-> 2. [`encode`](#encode)
-> 3. [`normalize`](#normalize)
-> 4. [`clean`](#clean)
->
-> This will ensure all the files are correct, encoded with the latest FLAC
-> version, normalized with ReplayGain, and cleaned from unnecessary blocks and
-> tags after all other operations.
 
 ```text
 $ ./panosse --help
@@ -119,6 +123,19 @@ Flags:
 Use "panosse [command] --help" for more information about a command.
 ```
 
+> [!TIP]
+>
+> The recommended order to execute panosse is:
+>
+> 1. [`verify`](#verify)
+> 2. [`encode`](#encode)
+> 3. [`normalize`](#normalize)
+> 4. [`clean`](#clean)
+>
+> This will ensure all the files are correct, encoded with the latest FLAC
+> version, normalized with ReplayGain, and cleaned from unnecessary blocks and
+> tags after all other operations.
+
 ### Verify
 
 ```text
@@ -135,12 +152,12 @@ Examples:
   $ panosse verify file.flac
 
   ## Verify all FLAC files in the current directory recursively and in parallel
-  $ find . -type f -name "*.flac" -print0 | xargs -0 -n1 -P$(nproc) panosse verify
+  $ find . -type f -name "*.flac" -print0 | xargs -0 -n 1 -P $(nproc) panosse verify
 
   ## Verify all FLAC files in the current directory recursively and in order
   # This approach is slower than the previous one but it can be useful to process
   # the files in a specific order (e.g., to follow the progression)
-  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 -P$(nproc) panosse verify
+  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n 1 panosse verify
 
 Flags:
   -a, --verify-arguments strings   arguments passed to flac to verify the files (default [--test,--silent])
@@ -162,12 +179,12 @@ Examples:
   $ panosse encode file.flac
 
   ## Encode all FLAC files in the current directory recursively and in parallel
-  $ find . -type f -name "*.flac" -print0 | xargs -0 -n1 -P$(nproc) panosse encode
+  $ find . -type f -name "*.flac" -print0 | xargs -0 -n 1 -P $(nproc) panosse encode
 
   ## Encode all FLAC files in the current directory recursively and in order
   # This approach is slower than the previous one but it can be useful to process
   # the files in a specific order (e.g., to follow the progression)
-  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 panosse encode
+  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n 1 panosse encode
 
 Flags:
   -a, --encode-arguments strings                   arguments passed to flac to encode the file (default [--compression-level-8,--delete-input-file,--no-padding,--force,--verify,--warnings-as-errors,--silent])
@@ -183,7 +200,7 @@ Flags:
 $ ./panosse normalize --help
 Normalize FLAC files with ReplayGain.
 
-It calls metaflac to add the ReplayGain tags to the FLAC files.
+It calls metaflac to calculate and add the ReplayGain tags to the FLAC files.
 
 Usage:
   panosse normalize <file 1> [<file 2>]... [flags]
@@ -192,15 +209,42 @@ Examples:
   ## Normalize some FLAC files
   $ panosse normalize file1.flac file2.flac
 
-  ## Normalize all FLAC files in all directories in parallel for a depth of 1
+  ## Normalize all FLAC files in each sub-directory for a depth of 1 in parallel
   # This allows to consider the nested directories as one album for the normalization
-  $ find . -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | while IFS= read -r -d '' dir; do
-    mapfile -d '' -t flac_files < <(find "$dir" -type f -name "*.flac" -print0)
-
+  $ find . -mindepth 1 -maxdepth 1 -type d -print0 | xargs -0 -n 1 -P $(nproc) bash -c '
+    dir="$1"
+    flac_files=()
+  
+    # Find all FLAC files in the current directory and store them in an array
+    while IFS= read -r -d "" file; do
+      flac_files+=("$file")
+    done < <(find "$dir" -type f -name "*.flac" -print0)
+  
+    # Check if there are any FLAC files found
     if [ ${#flac_files[@]} -ne 0 ]; then
+      # Pass the .flac files to the panosse normalize command
       panosse normalize "${flac_files[@]}"
     fi
-  done
+  ' {}
+
+  ## Normalize all FLAC files in each sub-directory for a depth of 1 in order
+  # This approach is slower than the previous one but it can be useful to process
+  # the files in a specific order (e.g., to follow the progression)
+  $ find . -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | xargs -0 -n 1 bash -c '
+    dir="$1"
+    flac_files=()
+  
+    # Find all FLAC files in the current directory and store them in an array
+    while IFS= read -r -d "" file; do
+      flac_files+=("$file")
+    done < <(find "$dir" -type f -name "*.flac" -print0)
+  
+    # Check if there are any FLAC files found
+    if [ ${#flac_files[@]} -ne 0 ]; then
+      # Pass the .flac files to the panosse normalize command
+      panosse normalize "${flac_files[@]}"
+    fi
+  ' {}
 
 Flags:
   -a, --normalize-arguments strings                     arguments passed to flac to normalize the files (default [--add-replay-gain])
@@ -227,12 +271,12 @@ Examples:
   $ panosse clean file.flac
 
   ## Clean all FLAC files in the current directory recursively and in parallel
-  $ find . -type f -name "*.flac" -print0 | xargs -0 -n1 -P$(nproc) panosse clean
+  $ find . -type f -name "*.flac" -print0 | xargs -0 -n 1 -P $(nproc) panosse clean
 
   ## Clean all FLAC files in the current directory recursively and in order
   # This approach is slower than the previous one but it can be useful to process
   # the files in a specific order (e.g., to follow the progression)
-  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 panosse clean
+  $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n 1 panosse clean
 
 Flags:
   -a, --clean-arguments strings   arguments passed to metaflac to clean the file (default [--remove,--dont-use-padding,--block-type=APPLICATION,--block-type=CUESHEET,--block-type=PADDING,--block-type=PICTURE,--block-type=SEEKTABLE])
@@ -898,7 +942,7 @@ The following commands can be used to achieve the final steps:
 
 ```sh
 # Verify the integrity of the FLAC files
-find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 ./panosse verify --verbose
+find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n 1 ./panosse verify --verbose
 ```
 
 <details>
@@ -995,7 +1039,7 @@ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 ./panosse verify 
 
 ```sh
 # Encode the FLAC files
-find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 ./panosse encode --verbose
+find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n 1 ./panosse encode --verbose
 ```
 
 <details>
@@ -1212,7 +1256,7 @@ already normalized.
 
 ```sh
 # Clean the FLAC files
-find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n1 ./panosse clean --verbose
+find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n 1 ./panosse clean --verbose
 ```
 
 <details>
