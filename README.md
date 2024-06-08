@@ -533,8 +533,8 @@ The first thing to notice is the difference in structure:
 The second thing to notice is the difference in naming:
 
 1. _2Pac - All Eyez on Me (1996)_ misses all the featuring in the filenames
-   (` (feat. Snoop Doggy Dogg, Nate Dogg & Dru Down)` in the
-   `02 - All Bout U (feat. Snoop Doggy Dogg, Nate Dogg & Dru Down).flac` track)
+   (`(feat. Snoop Doggy Dogg, Nate Dogg & Dru Down)` in the
+   `02 - All Bout U.flac` track)
 2. _Eminem - The Eminem Show (2002)_ has tracks named with a `` ` `` instead of
    `'`.
 3. _The Notorious B.I.G. - Ready To Die (1994)_ tracks are named
