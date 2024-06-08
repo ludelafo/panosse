@@ -92,6 +92,8 @@ reviews take too long and demotivate you.
 Once the pull request is good to be merged, the reviewer will merge your
 contribution with the main branch.
 
+Thank you VERY MUCH for your contribution!
+
 ### When will the contribution(s) will be released?
 
 Please check the section [Next release of panosse](#next-release-of-panosse) for
