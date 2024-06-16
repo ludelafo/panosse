@@ -174,11 +174,11 @@ func init() {
 		[]string{
 			"--compression-level-8",
 			"--delete-input-file",
-			"--no-padding",
 			"--force",
+			"--no-padding",
+			"--silent",
 			"--verify",
 			"--warnings-as-errors",
-			"--silent",
 		},
 		"arguments passed to flac to encode the file",
 	)
