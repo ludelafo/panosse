@@ -53,12 +53,12 @@ It calls metaflac to calculate and add the ReplayGain tags to the FLAC files.`,
   $ find . -mindepth 1 -maxdepth 1 -type d -print0 | xargs -0 -n 1 -P $(nproc) bash -c '
     dir="$1"
     flac_files=()
-  
+
     # Find all FLAC files in the current directory and store them in an array
     while IFS= read -r -d "" file; do
       flac_files+=("$file")
     done < <(find "$dir" -type f -name "*.flac" -print0)
-  
+
     # Check if there are any FLAC files found
     if [ ${#flac_files[@]} -ne 0 ]; then
       # Pass the .flac files to the panosse normalize command
@@ -72,12 +72,12 @@ It calls metaflac to calculate and add the ReplayGain tags to the FLAC files.`,
   $ find . -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | xargs -0 -n 1 bash -c '
     dir="$1"
     flac_files=()
-  
+
     # Find all FLAC files in the current directory and store them in an array
     while IFS= read -r -d "" file; do
       flac_files+=("$file")
     done < <(find "$dir" -type f -name "*.flac" -print0)
-  
+
     # Check if there are any FLAC files found
     if [ ${#flac_files[@]} -ne 0 ]; then
       # Pass the .flac files to the panosse normalize command

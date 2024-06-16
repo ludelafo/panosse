@@ -2,42 +2,42 @@
 Generate this file with the following command:
 
 ```sh
-echo "# Commands and flags" > COMMANDS_AND_FLAGS.md
-echo "" >> COMMANDS_AND_FLAGS.md
+echo "# Commands and flags" > ./docs/02_COMMANDS_AND_FLAGS.md
+echo "" >> ./docs/02_COMMANDS_AND_FLAGS.md
 
-echo "> [!TIP]" >> COMMANDS_AND_FLAGS.md
-echo ">" >> COMMANDS_AND_FLAGS.md
-echo "> The recommended order to execute panosse is:" >> COMMANDS_AND_FLAGS.md
-echo ">" >> COMMANDS_AND_FLAGS.md
-echo "> 1. \`verify\`" >> COMMANDS_AND_FLAGS.md
-echo "> 2. \`encode\`" >> COMMANDS_AND_FLAGS.md
-echo "> 3. \`normalize\`" >> COMMANDS_AND_FLAGS.md
-echo "> 4. \`clean\`" >> COMMANDS_AND_FLAGS.md
-echo ">" >> COMMANDS_AND_FLAGS.md
-echo "> This will ensure all the files are correct, encoded with the latest FLAC" >> COMMANDS_AND_FLAGS.md
-echo "> version, normalized with ReplayGain, and cleaned from unnecessary blocks and" >> COMMANDS_AND_FLAGS.md
-echo "> tags after all other operations." >> COMMANDS_AND_FLAGS.md
-echo "" >> COMMANDS_AND_FLAGS.md
+echo "> [!TIP]" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo ">" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "> The recommended order to execute panosse is:" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo ">" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "> 1. \`verify\`" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "> 2. \`encode\`" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "> 3. \`normalize\`" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "> 4. \`clean\`" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo ">" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "> This will ensure all the files are correct, encoded with the latest FLAC" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "> version, normalized with ReplayGain, and cleaned from unnecessary blocks and" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "> tags after all other operations." >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "" >> ./docs/02_COMMANDS_AND_FLAGS.md
 
-echo "Every panosse's commands have a \`help\` command to describe the command's usage." >> COMMANDS_AND_FLAGS.md
-echo "" >> COMMANDS_AND_FLAGS.md
-echo "You can use \`panosse [command] --help\` or \`panosse help [command]\` to display" >> COMMANDS_AND_FLAGS.md
-echo "the help." >> COMMANDS_AND_FLAGS.md
-echo "" >> COMMANDS_AND_FLAGS.md
+echo "Every panosse's commands have a \`help\` command to describe the command's usage." >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "You can use \`panosse [command] --help\` or \`panosse help [command]\` to display" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "the help." >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "" >> ./docs/02_COMMANDS_AND_FLAGS.md
 
-echo "\`\`\`text" >> COMMANDS_AND_FLAGS.md
-echo "$ ./panosse --help" >> COMMANDS_AND_FLAGS.md
-./panosse --help >> COMMANDS_AND_FLAGS.md
-echo "\`\`\`" >> COMMANDS_AND_FLAGS.md
+echo "\`\`\`text" >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "$ ./panosse --help" >> ./docs/02_COMMANDS_AND_FLAGS.md
+./panosse --help >> ./docs/02_COMMANDS_AND_FLAGS.md
+echo "\`\`\`" >> ./docs/02_COMMANDS_AND_FLAGS.md
 
 for command in clean encode normalize verify; do
-  echo "" >> COMMANDS_AND_FLAGS.md
-  echo "## ${command^}" >> COMMANDS_AND_FLAGS.md
-  echo "" >> COMMANDS_AND_FLAGS.md
-  echo "\`\`\`text" >> COMMANDS_AND_FLAGS.md
-  echo "$ ./panosse ${command} --help" >> COMMANDS_AND_FLAGS.md
-  ./panosse ${command} --help >> COMMANDS_AND_FLAGS.md
-  echo "\`\`\`" >> COMMANDS_AND_FLAGS.md
+  echo "" >> ./docs/02_COMMANDS_AND_FLAGS.md
+  echo "## ${command^}" >> ./docs/02_COMMANDS_AND_FLAGS.md
+  echo "" >> ./docs/02_COMMANDS_AND_FLAGS.md
+  echo "\`\`\`text" >> ./docs/02_COMMANDS_AND_FLAGS.md
+  echo "$ ./panosse ${command} --help" >> ./docs/02_COMMANDS_AND_FLAGS.md
+  ./panosse ${command} --help >> ./docs/02_COMMANDS_AND_FLAGS.md
+  echo "\`\`\`" >> ./docs/02_COMMANDS_AND_FLAGS.md
 done
 ```
 -->
@@ -122,7 +122,7 @@ Examples:
 Flags:
   -a, --clean-arguments strings   arguments passed to metaflac to clean the file (default [--remove,--dont-use-padding,--block-type=APPLICATION,--block-type=CUESHEET,--block-type=PADDING,--block-type=PICTURE,--block-type=SEEKTABLE])
   -h, --help                      help for clean
-  -t, --tags-to-keep strings      tags to keep in the file (default [ALBUM,ALBUMARTIST,ARTIST,COMMENT,COMPOSER,DISCNUMBER,FLAC_ARGUMENTS,GENRE,METAFLAC_ARGUMENTS,PERFORMER,REPLAYGAIN_REFERENCE_LOUDNESS,REPLAYGAIN_ALBUM_GAIN,REPLAYGAIN_ALBUM_PEAK,REPLAYGAIN_TRACK_GAIN,REPLAYGAIN_TRACK_PEAK,TITLE,TOTALDISCS,TOTALTRACKS,TRACKNUMBER,YEAR])
+  -t, --tags-to-keep strings      tags to keep in the file (default [ALBUM,ALBUMARTIST,ARTIST,COMMENT,DISCNUMBER,FLAC_ARGUMENTS,GENRE,METAFLAC_ARGUMENTS,REPLAYGAIN_REFERENCE_LOUDNESS,REPLAYGAIN_ALBUM_GAIN,REPLAYGAIN_ALBUM_PEAK,REPLAYGAIN_TRACK_GAIN,REPLAYGAIN_TRACK_PEAK,TITLE,TOTALDISCS,TOTALTRACKS,TRACKNUMBER,YEAR])
 
 Global Flags:
   -C, --config-file string             config file to use (optional - will use "config.yaml" or "~/.panosse/config.yaml" if available)
@@ -193,12 +193,12 @@ Examples:
   $ find . -mindepth 1 -maxdepth 1 -type d -print0 | xargs -0 -n 1 -P $(nproc) bash -c '
     dir="$1"
     flac_files=()
-  
+
     # Find all FLAC files in the current directory and store them in an array
     while IFS= read -r -d "" file; do
       flac_files+=("$file")
     done < <(find "$dir" -type f -name "*.flac" -print0)
-  
+
     # Check if there are any FLAC files found
     if [ ${#flac_files[@]} -ne 0 ]; then
       # Pass the .flac files to the panosse normalize command
@@ -212,12 +212,12 @@ Examples:
   $ find . -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | xargs -0 -n 1 bash -c '
     dir="$1"
     flac_files=()
-  
+
     # Find all FLAC files in the current directory and store them in an array
     while IFS= read -r -d "" file; do
       flac_files+=("$file")
     done < <(find "$dir" -type f -name "*.flac" -print0)
-  
+
     # Check if there are any FLAC files found
     if [ ${#flac_files[@]} -ne 0 ]; then
       # Pass the .flac files to the panosse normalize command
