@@ -1,7 +1,7 @@
 <!--
 Generate this file with the following command:
 
-```sh
+```bash
 echo "# Commands and flags" > ./docs/02_COMMANDS_AND_FLAGS.md
 echo "" >> ./docs/02_COMMANDS_AND_FLAGS.md
 
@@ -122,7 +122,7 @@ Examples:
 Flags:
   -a, --clean-arguments strings   arguments passed to metaflac to clean the file (default [--remove,--dont-use-padding,--block-type=APPLICATION,--block-type=CUESHEET,--block-type=PADDING,--block-type=PICTURE,--block-type=SEEKTABLE])
   -h, --help                      help for clean
-  -t, --tags-to-keep strings      tags to keep in the file (default [ALBUM,ALBUMARTIST,ARTIST,COMMENT,DISCNUMBER,FLAC_ARGUMENTS,GENRE,METAFLAC_ARGUMENTS,REPLAYGAIN_REFERENCE_LOUDNESS,REPLAYGAIN_ALBUM_GAIN,REPLAYGAIN_ALBUM_PEAK,REPLAYGAIN_TRACK_GAIN,REPLAYGAIN_TRACK_PEAK,TITLE,TOTALDISCS,TOTALTRACKS,TRACKNUMBER,YEAR])
+  -t, --tags-to-keep strings      tags to keep in the file (default [ALBUM,ALBUMARTIST,ARTIST,COMMENT,COMPOSER,DISCNUMBER,FLAC_ARGUMENTS,GENRE,LYRICS,METAFLAC_ARGUMENTS,PERFORMER,REPLAYGAIN_REFERENCE_LOUDNESS,REPLAYGAIN_ALBUM_GAIN,REPLAYGAIN_ALBUM_PEAK,REPLAYGAIN_TRACK_GAIN,REPLAYGAIN_TRACK_PEAK,TITLE,TOTALDISCS,TOTALTRACKS,TRACKNUMBER,YEAR])
 
 Global Flags:
   -C, --config-file string             config file to use (optional - will use "config.yaml" or "~/.panosse/config.yaml" if available)
@@ -157,7 +157,7 @@ Examples:
   $ find . -type f -name "*.flac" -print0 | sort -z | xargs -0 -n 1 panosse encode
 
 Flags:
-  -a, --encode-arguments strings                   arguments passed to flac to encode the file (default [--compression-level-8,--delete-input-file,--force,--no-padding,--silent,--verify,--warnings-as-errors])
+  -a, --encode-arguments strings                   arguments passed to flac to encode the file (default [--compression-level-8,--exhaustive-model-search,--no-padding,--qlp-coeff-precision-search,--verify,--warnings-as-errors])
       --encode-if-encode-argument-tags-mismatch    encode if encode argument tags mismatch (missing or different) (default true)
       --encode-if-flac-versions-mismatch           encode if flac versions mismatch between host's flac version and file's flac version (default true)
   -h, --help                                       help for encode

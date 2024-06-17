@@ -23,18 +23,18 @@ import (
 	"strings"
 )
 
-func Clean(metaflacCommandPath string, arguments []string, flacFile string) error {
+func Clean(metaflacCommandPath string, arguments []string, flacFile string) (string, error) {
 	commandExec := exec.Command(metaflacCommandPath, append(arguments, flacFile)...)
-	err := commandExec.Run()
+	commandOutput, err := commandExec.CombinedOutput()
 
-	return err
+	return string(commandOutput), err
 }
 
-func Normalize(metaflacCommandPath string, arguments []string, flacFiles []string) error {
+func Normalize(metaflacCommandPath string, arguments []string, flacFiles []string) (string, error) {
 	commandExec := exec.Command(metaflacCommandPath, append(arguments, flacFiles...)...)
-	err := commandExec.Run()
+	commandOutput, err := commandExec.CombinedOutput()
 
-	return err
+	return string(commandOutput), err
 }
 
 func GetTag(metaflacCommandPath string, tag string, flacFile string) (string, error) {
@@ -42,7 +42,7 @@ func GetTag(metaflacCommandPath string, tag string, flacFile string) (string, er
 	commandOutput, err := commandExec.CombinedOutput()
 
 	if err != nil {
-		return "", err
+		return string(commandOutput), err
 	}
 
 	tagContents := strings.Split(strings.TrimSpace(string(commandOutput)), "=")
@@ -56,25 +56,25 @@ func GetTag(metaflacCommandPath string, tag string, flacFile string) (string, er
 	return tagContent, nil
 }
 
-func SetTag(metaflacCommandPath string, tag string, tagContent string, flacFile string) error {
+func SetTag(metaflacCommandPath string, tag string, tagContent string, flacFile string) (string, error) {
 	commandExec := exec.Command(metaflacCommandPath, "--set-tag", tag+"="+tagContent, flacFile)
-	err := commandExec.Run()
+	commandOutput, err := commandExec.CombinedOutput()
 
-	return err
+	return string(commandOutput), err
 }
 
-func RemoveAllTags(metaflacCommandPath string, flacFile string) error {
+func RemoveAllTags(metaflacCommandPath string, flacFile string) (string, error) {
 	commandExec := exec.Command(metaflacCommandPath, "--remove-all-tags", flacFile)
-	err := commandExec.Run()
+	commandOutput, err := commandExec.CombinedOutput()
 
-	return err
+	return string(commandOutput), err
 }
 
-func RemoveTag(metaflacCommandPath string, tag string, flacFile string) error {
+func RemoveTag(metaflacCommandPath string, tag string, flacFile string) (string, error) {
 	commandExec := exec.Command(metaflacCommandPath, "--remove-tag", tag, flacFile)
-	err := commandExec.Run()
+	commandOutput, err := commandExec.CombinedOutput()
 
-	return err
+	return string(commandOutput), err
 }
 
 const FlacVersionFromFlacFileRegex = "reference libFLAC ([\\d]+.[\\d]+.[\\d]+) [\\d]+"
@@ -84,7 +84,7 @@ func GetFlacVersionFromFlacFile(metaflacCommandPath string, flacFile string) (st
 	commandOutput, err := commandExec.CombinedOutput()
 
 	if err != nil {
-		return "", err
+		return string(commandOutput), err
 	}
 
 	// Define the regular expression

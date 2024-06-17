@@ -125,12 +125,36 @@ It calls flac to encode the FLAC files.`,
 		}
 
 		if needToEncode || rootCmdArgs.Force {
+			encodeCmdArgs.EncodeArguments = append(
+				encodeCmdArgs.EncodeArguments,
+				"--force",
+				"--silent",
+			)
+
 			if !rootCmdArgs.DryRun {
-				utils.Encode(
+				var output, err = utils.Encode(
 					rootCmdArgs.FlacCommandPath,
 					encodeCmdArgs.EncodeArguments,
 					flacFile,
 				)
+
+				if err != nil {
+					if exitError, ok := err.(*exec.ExitError); ok {
+						resultCode := exitError.ExitCode()
+
+						log.Fatalf(
+							"ERROR - cannot encode file \"%s\" (exit code %d)",
+							flacFile,
+							resultCode,
+						)
+
+						if rootCmdArgs.Verbose {
+							log.Fatalln(output)
+						}
+					}
+
+					os.Exit(1)
+				}
 			}
 
 			if rootCmdArgs.Verbose {
@@ -173,10 +197,9 @@ func init() {
 		"a",
 		[]string{
 			"--compression-level-8",
-			"--delete-input-file",
-			"--force",
+			"--exhaustive-model-search",
 			"--no-padding",
-			"--silent",
+			"--qlp-coeff-precision-search",
 			"--verify",
 			"--warnings-as-errors",
 		},

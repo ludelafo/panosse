@@ -109,7 +109,7 @@ It calls metaflac to clean the FLAC files.`,
 		}
 
 		if !rootCmdArgs.DryRun {
-			err := utils.Clean(
+			var output, err = utils.Clean(
 				rootCmdArgs.MetaflacCommandPath,
 				cleanCmdArgs.CleanArguments,
 				flacFile,
@@ -124,6 +124,10 @@ It calls metaflac to clean the FLAC files.`,
 						flacFile,
 						resultCode,
 					)
+
+					if rootCmdArgs.Verbose {
+						log.Fatalln(output)
+					}
 				}
 
 				os.Exit(1)
@@ -163,10 +167,13 @@ func init() {
 			"ALBUMARTIST",
 			"ARTIST",
 			"COMMENT",
+			"COMPOSER",
 			"DISCNUMBER",
 			"FLAC_ARGUMENTS",
 			"GENRE",
+			"LYRICS",
 			"METAFLAC_ARGUMENTS",
+			"PERFORMER",
 			"REPLAYGAIN_REFERENCE_LOUDNESS",
 			"REPLAYGAIN_ALBUM_GAIN",
 			"REPLAYGAIN_ALBUM_PEAK",

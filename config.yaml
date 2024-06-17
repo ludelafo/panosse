@@ -33,10 +33,13 @@ tags-to-keep:
   - "ALBUMARTIST"
   - "ARTIST"
   - "COMMENT"
+  - "COMPOSER"
   - "DISCNUMBER"
   - "FLAC_ARGUMENTS"
   - "GENRE"
+  - "LYRICS"
   - "METAFLAC_ARGUMENTS"
+  - "PERFORMER"
   - "REPLAYGAIN_REFERENCE_LOUDNESS"
   - "REPLAYGAIN_ALBUM_GAIN"
   - "REPLAYGAIN_ALBUM_PEAK"
@@ -53,10 +56,9 @@ tags-to-keep:
 # Arguments passed to flac to encode the file
 encode-arguments:
   - "--compression-level-8"
-  - "--delete-input-file"
-  - "--force"
+  - "--exhaustive-model-search"
   - "--no-padding"
-  - "--silent"
+  - "--qlp-coeff-precision-search"
   - "--verify"
   - "--warnings-as-errors"
 

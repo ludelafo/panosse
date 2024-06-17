@@ -62,7 +62,7 @@ It calls metaflac to verify the FLAC files.`,
 		flacFile := args[0]
 
 		if !rootCmdArgs.DryRun {
-			err := utils.Verify(
+			var output, err = utils.Verify(
 				rootCmdArgs.FlacCommandPath,
 				verifyCmdArgs.VerifyArguments,
 				flacFile,
@@ -77,6 +77,10 @@ It calls metaflac to verify the FLAC files.`,
 						flacFile,
 						resultCode,
 					)
+
+					if rootCmdArgs.Verbose {
+						log.Fatalln(output)
+					}
 				}
 
 				os.Exit(1)
