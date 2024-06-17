@@ -39,15 +39,15 @@ builds:
     
 changelog:
   use: github
-  format: "{{ .SHA }}: {{ .Message }} ({{ with .AuthorUsername }}@{{ . }}{{ else }}{{ .AuthorName }} <{{ .AuthorEmail }}>{{ end }})"
+  format: "{{ .Message }} by {{ with .AuthorUsername }}@{{ . }}{{ else }}{{ .AuthorName }} <{{ .AuthorEmail }}>{{ end }}"
   # Empty means 'no sorting', it'll use the output of `git log` as is
   sort: ""
   groups:
     - title: Features
-      regexp: '^\[FEATURE\] .+$'
+      regexp: '^.*?\[FEATURE\] .+$'
       order: 0
     - title: "Bug fixes"
-      regexp: '^\[BUG\] .+$'
+      regexp: '^.*?\[BUG\] .+$'
       order: 1
     - title: Others
       order: 999
