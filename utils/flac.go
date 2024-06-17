@@ -22,11 +22,11 @@ import (
 	"regexp"
 )
 
-func Encode(flacCommand string, encodeSettings []string, flacFile string) error {
+func Encode(flacCommand string, encodeSettings []string, flacFile string) (string, error) {
 	commandExec := exec.Command(flacCommand, append(encodeSettings, flacFile)...)
-	err := commandExec.Run()
+	commandOutput, err := commandExec.CombinedOutput()
 
-	return err
+	return string(commandOutput), err
 }
 
 const FlacVersionFromFlacCommandRegex = "flac ([\\d]+.[\\d]+.[\\d]+)"
@@ -36,7 +36,7 @@ func GetFlacVersionFromFlacCommand(flacCommand string) (string, error) {
 	commandOutput, err := commandExec.CombinedOutput()
 
 	if err != nil {
-		return "", err
+		return string(commandOutput), err
 	}
 
 	// Define the regular expression
@@ -58,9 +58,9 @@ func GetFlacVersionFromFlacCommand(flacCommand string) (string, error) {
 	return flacVersion, nil
 }
 
-func Verify(flacCommand string, verifyCommandArguments []string, flacFile string) error {
+func Verify(flacCommand string, verifyCommandArguments []string, flacFile string) (string, error) {
 	commandExec := exec.Command(flacCommand, append(verifyCommandArguments, flacFile)...)
-	err := commandExec.Run()
+	commandOutput, err := commandExec.CombinedOutput()
 
-	return err
+	return string(commandOutput), err
 }

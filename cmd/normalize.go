@@ -144,7 +144,7 @@ It calls metaflac to calculate and add the ReplayGain tags to the FLAC files.`,
 
 		if needToNormalize || rootCmdArgs.Force {
 			if !rootCmdArgs.DryRun {
-				err := utils.Normalize(
+				var output, err = utils.Normalize(
 					rootCmdArgs.MetaflacCommandPath,
 					normalizeCmdArgs.NormalizeArguments,
 					flacFiles,
@@ -159,6 +159,10 @@ It calls metaflac to calculate and add the ReplayGain tags to the FLAC files.`,
 							flacFiles,
 							resultCode,
 						)
+
+						if rootCmdArgs.Verbose {
+							log.Fatalln(output)
+						}
 					}
 
 					os.Exit(1)
