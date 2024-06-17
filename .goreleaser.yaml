@@ -12,6 +12,7 @@ archives:
       - goos: windows
         format: zip
     files:
+      - docs
       - config.yaml
       - COPYING.md
       - README.md

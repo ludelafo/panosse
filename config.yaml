@@ -43,9 +43,9 @@ tags-to-keep:
   - "REPLAYGAIN_TRACK_GAIN"
   - "REPLAYGAIN_TRACK_PEAK"
   - "TITLE"
-  - "TRACKNUMBER"
   - "TOTALDISCS"
   - "TOTALTRACKS"
+  - "TRACKNUMBER"
   - "YEAR"
 
 ## Encode
@@ -54,11 +54,11 @@ tags-to-keep:
 encode-arguments:
   - "--compression-level-8"
   - "--delete-input-file"
-  - "--no-padding"
   - "--force"
+  - "--no-padding"
+  - "--silent"
   - "--verify"
   - "--warnings-as-errors"
-  - "--silent"
 
 # Encode if encode argument tags mismatch (missing or different)
 encode-if-encode-argument-tags-mismatch: true
